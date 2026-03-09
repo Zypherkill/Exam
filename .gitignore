@@ -25,5 +25,6 @@ MemoryCaptures/
 .DS_Store
 Thumbs.db
 
-# Unity Cloud
+# Unity Cloud / User settings
 UnityConnectSettings.asset
+ProjectSettings/EditorUserSettings.asset
