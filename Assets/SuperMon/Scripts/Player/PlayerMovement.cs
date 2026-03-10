@@ -14,6 +14,7 @@ public class PlayerMovement : MonoBehaviour
     public LayerMask groundLayer;
 
     private Rigidbody2D rb;
+    private Animator animator;
     private float defaultGravity;
     private bool isGrounded;
     private bool jumpConsumed;
@@ -22,6 +23,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
         defaultGravity = rb.gravityScale;
     }
 
@@ -69,6 +71,11 @@ public class PlayerMovement : MonoBehaviour
         else if (h < 0f)
         {
             transform.localScale = new Vector3(-1f, 1f, 1f);
+        }
+
+        if (animator != null)
+        {
+            animator.SetBool("isRunning", h != 0f);
         }
     }
 
