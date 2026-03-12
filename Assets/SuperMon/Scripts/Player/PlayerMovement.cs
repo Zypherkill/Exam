@@ -36,16 +36,20 @@ public class PlayerMovement : MonoBehaviour
         if (isGrounded && rb.linearVelocity.y <= 0f)
         {
             jumpConsumed = false;
+            animator.SetBool("isJumping", false);
         }
 
         // remember jump input for a short window so it doesn't get missed
         if (Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.UpArrow))
         {
             jumpBufferTimer = jumpBufferTime;
+            animator.SetBool("isJumping", true);
         }
         else
         {
             jumpBufferTimer -= Time.deltaTime;
+            animator.SetBool("isRunning", false);
+
         }
 
         // jump if grounded and haven't already jumped
@@ -75,7 +79,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (animator != null)
         {
-            animator.SetBool("isRunning", h != 0f);
+            animator.SetBool("isRunning", h != 0f && isGrounded);
         }
     }
 
