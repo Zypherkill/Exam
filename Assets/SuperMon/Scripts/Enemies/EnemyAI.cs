@@ -60,7 +60,7 @@ public class EnemyAI : MonoBehaviour
         }
 
         // turn around if there's no ground ahead (so we don't walk off edges)
-        Vector2 edgeCheck = rb.position + new Vector2(direction * edgeLookAhead, -0.2f);
+        Vector2 edgeCheck = rb.position + new Vector2(direction * edgeLookAhead, 0.4f);
         bool hasGround = Physics2D.Raycast(edgeCheck, Vector2.down, 0.6f, groundLayer);
         if (!hasGround)
         {

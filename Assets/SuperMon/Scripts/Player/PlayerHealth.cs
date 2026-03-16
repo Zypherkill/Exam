@@ -7,12 +7,16 @@ public class PlayerHealth : MonoBehaviour
     public float invincibilityDuration = 1.5f;
     public float knockbackForceX = 6f;
     public float knockbackForceY = 5f;
+    public float knockbackControlLockDuration = 0.2f;
 
     public int currentLives;
     private bool isInvincible;
     private float invincibilityTimer;
+    private float knockbackControlLockTimer;
     private SpriteRenderer spriteRenderer;
     private Rigidbody2D rb;
+
+    public bool IsKnockbackActive => knockbackControlLockTimer > 0f;
 
     void Start()
     {
@@ -23,6 +27,9 @@ public class PlayerHealth : MonoBehaviour
 
     void Update()
     {
+        if (knockbackControlLockTimer > 0f)
+            knockbackControlLockTimer -= Time.deltaTime;
+
         if (!isInvincible)
             return;
 
@@ -39,6 +46,11 @@ public class PlayerHealth : MonoBehaviour
             isInvincible = false;
             spriteRenderer.enabled = true;
         }
+    }
+
+    public void Die()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     // called by the enemy when it hits the player
@@ -62,6 +74,7 @@ public class PlayerHealth : MonoBehaviour
                 knockDir = -1f;
 
             rb.linearVelocity = new Vector2(knockDir * knockbackForceX, knockbackForceY);
+            knockbackControlLockTimer = knockbackControlLockDuration;
 
             isInvincible = true;
             invincibilityTimer = invincibilityDuration;
