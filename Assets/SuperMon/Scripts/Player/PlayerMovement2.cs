@@ -32,6 +32,9 @@ public class PlayerMovement2 : MonoBehaviour
     [SerializeField]
     private SpriteRenderer spriteRenderer;
 
+    private float defaultGravity = 3f;
+    private float fallGravityMultiplier = 1.2f;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -50,7 +53,6 @@ public class PlayerMovement2 : MonoBehaviour
             extendJump = false;
         }
         isGrounded = groundCheck;
-        
         // Check för att släppa hoppet om spelaren inte längre håller ner hoppknappen
         if (!jumpInput && extendJump)
         {
@@ -65,7 +67,7 @@ public class PlayerMovement2 : MonoBehaviour
             canJump = false;
             extendJump = true;
         }
-        
+
         // Förläng hoppet så länge spelaren håller ner hoppknappen och inte har nått max jump time
         if (extendJump && !groundCheck && jumpHoldTimer < jumpTime)
         {
@@ -109,18 +111,19 @@ public class PlayerMovement2 : MonoBehaviour
         if (hit.collider != null)
         {
             groundCheck = true;
+            rb.gravityScale = defaultGravity;
         }
         else
         {
             groundCheck = false;
+            rb.gravityScale = defaultGravity * fallGravityMultiplier;
         }
     }
 
     //Funktion för att hoppa på en fiende och döda den
     public void StompBounce()
 {
-    canJump = true;
-    jumpHoldTimer = 0;
     rb.linearVelocity = new Vector2(rb.linearVelocity.x, stompForce);
+    rb.AddForce(Vector2.up * 8, ForceMode2D.Impulse);
 }
 }

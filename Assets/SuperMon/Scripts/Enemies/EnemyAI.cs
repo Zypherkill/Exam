@@ -68,7 +68,7 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    void CheckForPlayer()
+    public void CheckForPlayer()
     {
         // see if the player is overlapping with this enemy
         Collider2D playerCol = Physics2D.OverlapBox(col.bounds.center, col.bounds.size, 0f, playerLayer);
@@ -102,7 +102,7 @@ public class EnemyAI : MonoBehaviour
         col.enabled = false;
 
         // bounce the player up
-        player.GetComponent<PlayerMovement>().StompBounce();
+        player.GetComponent<PlayerMovement2>().StompBounce();
 
         Destroy(gameObject, 0.3f);
     }

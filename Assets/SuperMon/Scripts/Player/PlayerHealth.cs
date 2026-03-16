@@ -8,7 +8,7 @@ public class PlayerHealth : MonoBehaviour
     public float knockbackForceX = 6f;
     public float knockbackForceY = 5f;
 
-    private int currentLives;
+    public int currentLives;
     private bool isInvincible;
     private float invincibilityTimer;
     private SpriteRenderer spriteRenderer;
