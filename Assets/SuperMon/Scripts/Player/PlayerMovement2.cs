@@ -27,6 +27,7 @@ public class PlayerMovement2 : MonoBehaviour
     private bool isGrounded = true;
     private bool extendJump = false;
 
+    private Animator animator;
     private bool groundCheck;
 
     [SerializeField]
@@ -38,19 +39,20 @@ public class PlayerMovement2 : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     void FixedUpdate()
     {
         GroundCheck();
         rb.linearVelocityX = moveInput * moveSpeed;
-
         
         // Resettar canJump när man landar
         if (groundCheck && !isGrounded)
         {
             canJump = true;
             extendJump = false;
+            animator.SetBool("isJumping", false);
         }
         isGrounded = groundCheck;
         // Check för att släppa hoppet om spelaren inte längre håller ner hoppknappen
@@ -66,6 +68,7 @@ public class PlayerMovement2 : MonoBehaviour
             rb.linearVelocityY = jumpForce;
             canJump = false;
             extendJump = true;
+            animator.SetBool("isJumping", true);
         }
 
         // Förläng hoppet så länge spelaren håller ner hoppknappen och inte har nått max jump time
@@ -78,12 +81,21 @@ public class PlayerMovement2 : MonoBehaviour
 
         if (moveInput != 0) {
             spriteRenderer.flipX = moveInput < 0;
+            animator.SetBool("isRunning", true);
+        } else {
+            animator.SetBool("isRunning", false);
+        }
+
+        if(moveSpeed !=0 && jumpInput)
+        {
+            animator.SetBool("isJumping", true);
         }
 
         if (runInput)
         {
             rb.linearVelocityX = moveInput * moveSpeed * runSpeedMultiplier;
         }
+        
     }
 
     //Funktion för att läsa in rörelse
