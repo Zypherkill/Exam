@@ -27,30 +27,34 @@ public class PlayerMovement2 : MonoBehaviour
     private bool isGrounded = true;
     private bool extendJump = false;
 
+    private Animator animator;
     private bool groundCheck;
 
     [SerializeField]
     private SpriteRenderer spriteRenderer;
 
+    private float defaultGravity = 3f;
+    private float fallGravityMultiplier = 1.2f;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     void FixedUpdate()
     {
         GroundCheck();
         rb.linearVelocityX = moveInput * moveSpeed;
-
         
         // Resettar canJump när man landar
         if (groundCheck && !isGrounded)
         {
             canJump = true;
             extendJump = false;
+            animator.SetBool("isJumping", false);
         }
         isGrounded = groundCheck;
-        
         // Check för att släppa hoppet om spelaren inte längre håller ner hoppknappen
         if (!jumpInput && extendJump)
         {
@@ -64,8 +68,9 @@ public class PlayerMovement2 : MonoBehaviour
             rb.linearVelocityY = jumpForce;
             canJump = false;
             extendJump = true;
+            animator.SetBool("isJumping", true);
         }
-        
+
         // Förläng hoppet så länge spelaren håller ner hoppknappen och inte har nått max jump time
         if (extendJump && !groundCheck && jumpHoldTimer < jumpTime)
         {
@@ -76,12 +81,21 @@ public class PlayerMovement2 : MonoBehaviour
 
         if (moveInput != 0) {
             spriteRenderer.flipX = moveInput < 0;
+            animator.SetBool("isRunning", true);
+        } else {
+            animator.SetBool("isRunning", false);
+        }
+
+        if(moveSpeed !=0 && jumpInput)
+        {
+            animator.SetBool("isJumping", true);
         }
 
         if (runInput)
         {
             rb.linearVelocityX = moveInput * moveSpeed * runSpeedMultiplier;
         }
+        
     }
 
     //Funktion för att läsa in rörelse
@@ -109,18 +123,19 @@ public class PlayerMovement2 : MonoBehaviour
         if (hit.collider != null)
         {
             groundCheck = true;
+            rb.gravityScale = defaultGravity;
         }
         else
         {
             groundCheck = false;
+            rb.gravityScale = defaultGravity * fallGravityMultiplier;
         }
     }
 
     //Funktion för att hoppa på en fiende och döda den
     public void StompBounce()
 {
-    canJump = true;
-    jumpHoldTimer = 0;
     rb.linearVelocity = new Vector2(rb.linearVelocity.x, stompForce);
+    rb.AddForce(Vector2.up * 8, ForceMode2D.Impulse);
 }
 }

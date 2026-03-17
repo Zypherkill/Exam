@@ -9,7 +9,7 @@ public class PlayerHealth : MonoBehaviour
     public float knockbackForceY = 5f;
     public float knockbackControlLockDuration = 0.2f;
 
-    private int currentLives;
+    public int currentLives;
     private bool isInvincible;
     private float invincibilityTimer;
     private float knockbackControlLockTimer;

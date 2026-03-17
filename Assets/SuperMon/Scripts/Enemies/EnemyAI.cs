@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
 {
@@ -18,6 +18,13 @@ public class EnemyAI : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<Collider2D>();
+        if (rb == null || col == null)
+        {
+            Debug.LogError("EnemyAI requires Rigidbody2D and Collider2D on the same GameObject.", this);
+            enabled = false;
+            return;
+        }
+
         rb.freezeRotation = true;
 
         // randomly pick a starting direction
@@ -32,7 +39,7 @@ public class EnemyAI : MonoBehaviour
         if (isDead)
             return;
 
-        MoveAndTurn();
+        // MoveAndTurn();
         CheckForPlayer();
 
         if (damageCooldown > 0f)
@@ -41,6 +48,7 @@ public class EnemyAI : MonoBehaviour
         // stop physics from launching the enemy upward when hit
         if (rb.linearVelocity.y > 0f)
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
+        
     }
 
     void MoveAndTurn()
@@ -68,14 +76,21 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    void CheckForPlayer()
+    public void CheckForPlayer()
     {
+        if (col == null)
+            return;
+
         // see if the player is overlapping with this enemy
         Collider2D playerCol = Physics2D.OverlapBox(col.bounds.center, col.bounds.size, 0f, playerLayer);
         if (playerCol == null)
             return;
 
-        GameObject player = playerCol.gameObject;
+        PlayerHealth playerHealth = playerCol.GetComponentInParent<PlayerHealth>();
+        if (playerHealth == null)
+            return;
+
+        GameObject player = playerHealth.gameObject;
         Rigidbody2D playerRb = player.GetComponent<Rigidbody2D>();
 
         bool playerAbove = player.transform.position.y > transform.position.y + 0.2f;
@@ -89,7 +104,7 @@ public class EnemyAI : MonoBehaviour
         else if (damageCooldown <= 0f)
         {
             // enemy touches player from the side, damage the player
-            player.GetComponent<PlayerHealth>().TakeDamage(transform.position.x);
+            playerHealth.TakeDamage(transform.position.x);
             damageCooldown = 0.5f;
         }
     }
@@ -99,10 +114,12 @@ public class EnemyAI : MonoBehaviour
         isDead = true;
         rb.linearVelocity = Vector2.zero;
         rb.bodyType = RigidbodyType2D.Static;
+        GetComponent<PikachuLogic>()?.Die();
         col.enabled = false;
 
         // bounce the player up
-        player.GetComponent<PlayerMovement>().StompBounce();
+        PlayerMovement2 movement = player.GetComponentInParent<PlayerMovement2>();
+        movement?.StompBounce();
 
         Destroy(gameObject, 0.3f);
     }
