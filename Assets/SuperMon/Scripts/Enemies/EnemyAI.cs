@@ -10,7 +10,7 @@ public class EnemyAI : MonoBehaviour
 
     private Rigidbody2D rb;
     private Collider2D col;
-    private int direction = 1;
+    
     private bool isDead;
     private float damageCooldown;
 
@@ -26,20 +26,13 @@ public class EnemyAI : MonoBehaviour
         }
 
         rb.freezeRotation = true;
-
-        // randomly pick a starting direction
-        if (Random.value > 0.5f)
-            direction = 1;
-        else
-            direction = -1;
     }
 
     void FixedUpdate()
     {
         if (isDead)
             return;
-
-        // MoveAndTurn();
+            
         CheckForPlayer();
 
         if (damageCooldown > 0f)
@@ -51,42 +44,27 @@ public class EnemyAI : MonoBehaviour
         
     }
 
-    void MoveAndTurn()
-    {
-        rb.linearVelocity = new Vector2(direction * moveSpeed, rb.linearVelocity.y);
-
-        // flip sprite to face movement direction
-        transform.localScale = new Vector3(direction, 1f, 1f);
-
-        // turn around if there's a wall ahead
-        Vector2 wallCheck = rb.position + new Vector2(direction * 0.4f, 0f);
-        bool hitsWall = Physics2D.Raycast(wallCheck, Vector2.right * direction, wallCheckDistance, groundLayer);
-        if (hitsWall)
-        {
-            direction = direction * -1;
-            return;
-        }
-
-        // turn around if there's no ground ahead (so we don't walk off edges)
-        Vector2 edgeCheck = rb.position + new Vector2(direction * edgeLookAhead, 0.4f);
-        bool hasGround = Physics2D.Raycast(edgeCheck, Vector2.down, 0.6f, groundLayer);
-        if (!hasGround)
-        {
-            direction = direction * -1;
-        }
-    }
-
     public void CheckForPlayer()
     {
         if (col == null)
             return;
 
-        // see if the player is overlapping with this enemy
-        Collider2D playerCol = Physics2D.OverlapBox(col.bounds.center, col.bounds.size, 0f, playerLayer);
-        if (playerCol == null)
-            return;
+        // Expand the check area slightly upward so top contacts are included.
+        Vector2 checkSize = new Vector2(col.bounds.size.x, col.bounds.size.y + 0.2f);
+        Vector2 checkCenter = new Vector2(col.bounds.center.x, col.bounds.center.y + 0.1f);
 
-        PlayerHealth playerHealth = playerCol.GetComponentInParent<PlayerHealth>();
+        Collider2D[] hits = Physics2D.OverlapBoxAll(checkCenter, checkSize, 0f);
+        PlayerHealth playerHealth = null;
+
+        for (int i = 0; i < hits.Length; i++)
+        {
+            playerHealth = hits[i].GetComponentInParent<PlayerHealth>();
+            if (playerHealth != null)
+            {
+                break;
+            }
+        }
+
         if (playerHealth == null)
             return;
 
@@ -114,14 +92,12 @@ public class EnemyAI : MonoBehaviour
         isDead = true;
         rb.linearVelocity = Vector2.zero;
         rb.bodyType = RigidbodyType2D.Static;
-        GetComponent<PikachuLogic>()?.Die();
         col.enabled = false;
 
         // bounce the player up
         PlayerMovement2 movement = player.GetComponentInParent<PlayerMovement2>();
-        movement?.StompBounce();
+        movement.StompBounce();
 
         Destroy(gameObject, 0.3f);
     }
 }
-

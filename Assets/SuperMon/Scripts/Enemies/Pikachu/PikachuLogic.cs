@@ -2,7 +2,7 @@
 
 public class PikachuLogic : MonoBehaviour
 {
-    [Header("Rörelse")]
+    [Header("Movement")]
     [SerializeField] private float moveSpeed = 2f;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float edgeLookAhead = 0.4f;
