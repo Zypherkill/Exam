@@ -9,11 +9,20 @@ EditorBuildSettings:
     path: Assets/SuperMon/Scenes/MainMenu.unity
     guid: e9e3295db7af80e42a6ce49ca8097712
   - enabled: 1
+    path: Assets/SuperMon/Scenes/Intro1.unity
+    guid: 3d601a3fd5194694b8189290010ccf00
+  - enabled: 1
     path: Assets/SuperMon/Scenes/Level1.unity
     guid: 85069725713663046a85e486c5bcdfda
   - enabled: 1
+    path: Assets/SuperMon/Scenes/Intro2.unity
+    guid: 454113bfda8f50e42a3ddd6243b6341c
+  - enabled: 1
     path: Assets/SuperMon/Scenes/Level2.unity
     guid: d526050b5047ff14493da8f0922740e3
+  - enabled: 1
+    path: Assets/SuperMon/Scenes/GameOver.unity
+    guid: 0a8bbfeca0cae3c44ab9bbef90a8b09e
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 3590b91b4603b465dbb4216d601bff33, type: 3}
   m_UseUCBPForAssetBundles: 0
