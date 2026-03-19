@@ -29,6 +29,7 @@ public class PlayerMovement2 : MonoBehaviour
 
     private Animator animator;
     private bool groundCheck;
+    private PlayerHealth playerHealth;
 
     [SerializeField]
     private SpriteRenderer spriteRenderer;
@@ -40,12 +41,15 @@ public class PlayerMovement2 : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        playerHealth = GetComponent<PlayerHealth>();
     }
 
     void FixedUpdate()
     {
         GroundCheck();
-        rb.linearVelocityX = moveInput * moveSpeed;
+        bool isKnockbackActive = playerHealth != null && playerHealth.IsKnockbackActive;
+        if (!isKnockbackActive)
+            rb.linearVelocityX = moveInput * moveSpeed;
         
         // Resettar canJump när man landar
         if (groundCheck && !isGrounded)
@@ -91,7 +95,7 @@ public class PlayerMovement2 : MonoBehaviour
             animator.SetBool("isJumping", true);
         }
 
-        if (runInput)
+        if (runInput && !isKnockbackActive)
         {
             rb.linearVelocityX = moveInput * moveSpeed * runSpeedMultiplier;
         }

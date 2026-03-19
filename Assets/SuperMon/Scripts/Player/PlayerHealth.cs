@@ -80,5 +80,18 @@ public class PlayerHealth : MonoBehaviour
             invincibilityTimer = invincibilityDuration;
         }
     }
+
+    public void ApplyPush(float sourceX, float horizontalForce)
+    {
+        if (rb == null)
+            return;
+
+        float pushDir = 1f;
+        if (transform.position.x < sourceX)
+            pushDir = -1f;
+
+        rb.linearVelocity = new Vector2(pushDir * horizontalForce, rb.linearVelocity.y);
+        knockbackControlLockTimer = knockbackControlLockDuration;
+    }
 }
 
