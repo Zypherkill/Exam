@@ -20,7 +20,6 @@ public class PlayerMovement2 : MonoBehaviour
     private float moveInput;
 
     private bool runInput;
-    private bool jumpHeld;
     private bool jumpConsumed;
     private bool holdJump;
     private float jumpHoldTimer;
@@ -69,7 +68,7 @@ public class PlayerMovement2 : MonoBehaviour
         }
 
         // Förläng hoppet under samma knapptryckning upp till max tid.
-        if (holdJump && jumpHeld && !groundCheck && jumpHoldTimer < jumpTime)
+        if (holdJump && !groundCheck && jumpHoldTimer < jumpTime)
         {
             jumpHoldTimer += Time.fixedDeltaTime;
             rb.linearVelocityY = jumpForce;
@@ -118,13 +117,11 @@ public class PlayerMovement2 : MonoBehaviour
     {
         GroundCheck();
         bool currentHeld = context.ReadValueAsButton();
-        if (currentHeld && !jumpHeld)
+        if (currentHeld && !holdJump)
             jumpConsumed = true;
 
         if (!currentHeld)
-            holdJump = false;
-
-        jumpHeld = currentHeld;
+            holdJump = currentHeld;
     }
 
     public void OnRunningInput(InputAction.CallbackContext context)
