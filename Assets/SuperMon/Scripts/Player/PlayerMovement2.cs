@@ -7,12 +7,11 @@ public class PlayerMovement2 : MonoBehaviour
     private float moveSpeed;
     [SerializeField]
     private float jumpForce;
+    [SerializeField]
+    private float jumpTime = 0.1f;
 
     [SerializeField]
     private float stompForce;
-
-    [SerializeField]
-    private float jumpTime = 0.01f;
 
     [SerializeField]
     private float runSpeedMultiplier = 1.5f;
@@ -21,11 +20,11 @@ public class PlayerMovement2 : MonoBehaviour
     private float moveInput;
 
     private bool runInput;
-    private bool jumpInput;
+    private bool jumpHeld;
+    private bool jumpConsumed;
+    private bool holdJump;
     private float jumpHoldTimer;
-    private bool canJump = true;
     private bool isGrounded = true;
-    private bool extendJump = false;
 
     private Animator animator;
     private bool groundCheck;
@@ -35,7 +34,7 @@ public class PlayerMovement2 : MonoBehaviour
     private SpriteRenderer spriteRenderer;
 
     private float defaultGravity = 3f;
-    private float fallGravityMultiplier = 1.2f;
+    private float fallGravityMultiplier = 1f;
 
     void Awake()
     {
@@ -51,48 +50,54 @@ public class PlayerMovement2 : MonoBehaviour
         if (!isKnockbackActive)
             rb.linearVelocityX = moveInput * moveSpeed;
         
-        // Resettar canJump när man landar
+        // Resettar hopptillstand nar man landar
         if (groundCheck && !isGrounded)
         {
-            canJump = true;
-            extendJump = false;
             animator.SetBool("isJumping", false);
+            holdJump = false;
+            jumpHoldTimer = 0f;
         }
         isGrounded = groundCheck;
-        // Check för att släppa hoppet om spelaren inte längre håller ner hoppknappen
-        if (!jumpInput && extendJump)
-        {
-            extendJump = false;
-        }
         
-        // Hoppa endast om man är på marken och inga dubbelhopp är tillåtna
-        if (jumpInput && groundCheck && canJump)
+        // Hoppa endast om man ar pa marken
+        if (jumpConsumed && groundCheck)
         {
-            jumpHoldTimer = 0;
             rb.linearVelocityY = jumpForce;
-            canJump = false;
-            extendJump = true;
+            holdJump = true;
+            jumpHoldTimer = 0f;
             animator.SetBool("isJumping", true);
         }
 
-        // Förläng hoppet så länge spelaren håller ner hoppknappen och inte har nått max jump time
-        if (extendJump && !groundCheck && jumpHoldTimer < jumpTime)
+        // Förläng hoppet under samma knapptryckning upp till max tid.
+        if (holdJump && jumpHeld && !groundCheck && jumpHoldTimer < jumpTime)
         {
-            jumpHoldTimer += Time.deltaTime;
-            float force = (jumpHoldTimer >= jumpTime) ? jumpForce * 2f : jumpForce;
-            rb.linearVelocityY = force;
+            jumpHoldTimer += Time.fixedDeltaTime;
+            rb.linearVelocityY = jumpForce;
         }
 
-        if (moveInput != 0) {
+        // Ett nytt hopp kräver ett nytt knapptryck.
+        jumpConsumed = false;
+
+        if (moveInput != 0)
             spriteRenderer.flipX = moveInput < 0;
-            animator.SetBool("isRunning", true);
-        } else {
-            animator.SetBool("isRunning", false);
-        }
 
-        if(moveSpeed !=0 && jumpInput)
+        if (!groundCheck || holdJump)
         {
             animator.SetBool("isJumping", true);
+            animator.SetBool("isRunning", false);
+            animator.SetBool("isIdle", false);
+        }
+        else if (moveInput != 0)
+        {
+            animator.SetBool("isJumping", false);
+            animator.SetBool("isRunning", true);
+            animator.SetBool("isIdle", false);
+        }
+        else
+        {
+            animator.SetBool("isIdle", true);
+            animator.SetBool("isJumping", false);
+            animator.SetBool("isRunning", false);
         }
 
         if (runInput && !isKnockbackActive)
@@ -112,7 +117,14 @@ public class PlayerMovement2 : MonoBehaviour
     public void OnJumpInput(InputAction.CallbackContext context)
     {
         GroundCheck();
-        jumpInput = context.ReadValueAsButton();
+        bool currentHeld = context.ReadValueAsButton();
+        if (currentHeld && !jumpHeld)
+            jumpConsumed = true;
+
+        if (!currentHeld)
+            holdJump = false;
+
+        jumpHeld = currentHeld;
     }
 
     public void OnRunningInput(InputAction.CallbackContext context)
