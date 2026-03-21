@@ -21,6 +21,12 @@ EditorBuildSettings:
     path: Assets/SuperMon/Scenes/Level2.unity
     guid: d526050b5047ff14493da8f0922740e3
   - enabled: 1
+    path: Assets/SuperMon/Scenes/Intro3.unity
+    guid: 20127a34a333e234dbbd2e0e1037371e
+  - enabled: 1
+    path: Assets/SuperMon/Scenes/Level3.unity
+    guid: b30ce9d2538fe3c4aa7c4ffe3e6e7c1d
+  - enabled: 1
     path: Assets/SuperMon/Scenes/GameOver.unity
     guid: 0a8bbfeca0cae3c44ab9bbef90a8b09e
   m_configObjects:
