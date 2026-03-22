@@ -50,7 +50,7 @@ public class PlayerHealth : MonoBehaviour
 
     public void Die()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadScene("GameOver");
     }
 
     // called by the enemy when it hits the player

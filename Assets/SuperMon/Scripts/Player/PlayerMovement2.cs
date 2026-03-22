@@ -35,6 +35,10 @@ public class PlayerMovement2 : MonoBehaviour
     private float defaultGravity = 3f;
     private float fallGravityMultiplier = 1f;
 
+    [SerializeField]
+    private float wallCheckDistance = 0.5f;
+    private bool isAgainstWall = false;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -48,7 +52,7 @@ public class PlayerMovement2 : MonoBehaviour
         bool isKnockbackActive = playerHealth != null && playerHealth.IsKnockbackActive;
         if (!isKnockbackActive)
             rb.linearVelocityX = moveInput * moveSpeed;
-        
+
         // Resettar hopptillstand nar man landar
         if (groundCheck && !isGrounded)
         {
@@ -57,7 +61,7 @@ public class PlayerMovement2 : MonoBehaviour
             jumpHoldTimer = 0f;
         }
         isGrounded = groundCheck;
-        
+
         // Hoppa endast om man ar pa marken
         if (jumpConsumed && groundCheck)
         {
@@ -103,7 +107,7 @@ public class PlayerMovement2 : MonoBehaviour
         {
             rb.linearVelocityX = moveInput * moveSpeed * runSpeedMultiplier;
         }
-        
+
     }
 
     //Funktion för att läsa in rörelse
@@ -147,8 +151,8 @@ public class PlayerMovement2 : MonoBehaviour
 
     //Funktion för att hoppa på en fiende och döda den
     public void StompBounce()
-{
-    rb.linearVelocity = new Vector2(rb.linearVelocity.x, stompForce);
-    rb.AddForce(Vector2.up * 8, ForceMode2D.Impulse);
-}
+    {
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, stompForce);
+        rb.AddForce(Vector2.up * 8, ForceMode2D.Impulse);
+    }
 }

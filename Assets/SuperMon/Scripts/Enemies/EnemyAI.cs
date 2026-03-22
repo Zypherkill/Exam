@@ -10,7 +10,7 @@ public class EnemyAI : MonoBehaviour
 
     private Rigidbody2D rb;
     private Collider2D col;
-    
+
     private bool isDead;
     private float damageCooldown;
 
@@ -32,7 +32,8 @@ public class EnemyAI : MonoBehaviour
     {
         if (isDead)
             return;
-            
+
+
         CheckForPlayer();
 
         if (damageCooldown > 0f)
@@ -41,7 +42,7 @@ public class EnemyAI : MonoBehaviour
         // stop physics from launching the enemy upward when hit
         if (rb.linearVelocity.y > 0f)
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
-        
+
     }
 
     public void CheckForPlayer()
@@ -100,4 +101,5 @@ public class EnemyAI : MonoBehaviour
 
         Destroy(gameObject, 0.3f);
     }
+
 }
