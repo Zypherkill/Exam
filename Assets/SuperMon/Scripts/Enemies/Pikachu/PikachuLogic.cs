@@ -1,27 +1,27 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class PikachuLogic : MonoBehaviour
 {
-    [Header("Movement")]
-    [SerializeField] private float moveSpeed = 2f;
-    [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private float edgeLookAhead = 0.4f;
-    [SerializeField] private float wallCheckDistance = 0.2f;
-
     [Header("Attack")]
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint;
     [SerializeField] private float attackCooldown = 1.5f;
-    [SerializeField] private float attackRange = 5f;
+    [SerializeField] private float detectionRange = 8f;
+    [SerializeField] private float shootingRange = 4f;
 
     private Rigidbody2D rb;
+    private Animator animator;
     private int direction = 1;
     private float attackTimer;
     private bool isDead;
+    private bool isAttacking;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
+
         if (rb == null)
         {
             Debug.LogError("PikachuLogic requires a Rigidbody2D.", this);
@@ -29,10 +29,20 @@ public class PikachuLogic : MonoBehaviour
             return;
         }
 
-        if (Random.value > 0.5f)
-            direction = 1;
-        else
-            direction = -1;
+        if (animator == null)
+        {
+            Debug.LogError("PikachuLogic requires an Animator component.", this);
+        }
+
+        direction = Random.value > 0.5f ? 1 : -1;
+        transform.localScale = new Vector3((float)direction, 1f, 1f);
+
+        // Initialisera idle-animation
+        isAttacking = false;
+        if (animator != null)
+        {
+            animator.SetBool("isAttacking", false);
+        }
     }
 
     void FixedUpdate()
@@ -40,33 +50,28 @@ public class PikachuLogic : MonoBehaviour
         if (isDead)
             return;
 
-        MoveAndTurn();
+        // Uppdatera attacktimer
         attackTimer -= Time.fixedDeltaTime;
+        UpdateFacingDirection();
         TryThunderbolt();
     }
 
-    void MoveAndTurn()
+    void UpdateFacingDirection()
     {
-        rb.linearVelocity = new Vector2(direction * moveSpeed, rb.linearVelocity.y);
-
-        // Vänd sprite mot rörelseriktningen
-        transform.localScale = new Vector3(direction, 1f, 1f);
-
-        // Vänd om det är en vägg framför
-        Vector2 wallCheck = rb.position + new Vector2(direction * 0.4f, 0f);
-        bool hitsWall = Physics2D.Raycast(wallCheck, Vector2.right * direction, wallCheckDistance, groundLayer);
-        if (hitsWall)
-        {
-            direction *= -1;
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null)
             return;
-        }
 
-        // Vänd om det inte finns mark framför
-        Vector2 edgeCheck = rb.position + new Vector2(direction * edgeLookAhead, 0.4f);
-        bool hasGround = Physics2D.Raycast(edgeCheck, Vector2.down, 0.6f, groundLayer);
-        if (!hasGround)
+        float distanceX = player.transform.position.x - transform.position.x;
+        float distanceAbs = Mathf.Abs(distanceX);
+
+        // Vänd mot spelaren om den är nära nog
+        if (distanceAbs <= detectionRange)
         {
-            direction *= -1;
+            int playerDirection = (int)Mathf.Sign(distanceX);
+            if (playerDirection != 0)
+                direction = playerDirection;
+            transform.localScale = new Vector3((float)direction, 1f, 1f);
         }
     }
 
@@ -75,14 +80,19 @@ public class PikachuLogic : MonoBehaviour
         if (attackTimer > 0f)
             return;
 
+        // Attackera inte om han redan attackerar
+        if (isAttacking)
+            return;
+
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player == null)
             return;
 
         float distanceX = player.transform.position.x - transform.position.x;
+        float distanceAbs = Mathf.Abs(distanceX);
 
-        // Kolla om spelaren är inom range och framför fienden
-        if (Mathf.Abs(distanceX) <= attackRange && Mathf.Sign(distanceX) == direction)
+        // Skjut endast om spelaren är tillräckligt nära och framför Pikachu
+        if (distanceAbs <= shootingRange && (int)Mathf.Sign(distanceX) == direction)
         {
             Thunderbolt();
             attackTimer = attackCooldown;
@@ -94,12 +104,86 @@ public class PikachuLogic : MonoBehaviour
         if (projectilePrefab == null || firePoint == null)
             return;
 
+        // Avbryt eventuella väntande coroutines
+        StopCoroutine(nameof(ResetAttackAfterAnimation));
+
+        // Ställ in attackanimation
+        isAttacking = true;
+        if (animator != null)
+        {
+            animator.SetBool("isAttacking", true);
+
+            // Starta coroutine för att vänta på attackanimation
+            StartCoroutine(ResetAttackAfterAnimation());
+        }
+
         GameObject proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
         ThunderboltProjectile projectile = proj.GetComponent<ThunderboltProjectile>();
-        if (projectile == null)
-            return;
+        if (projectile != null)
+            projectile.SetDirection(new Vector2((float)direction, 0));
+    }
 
-        projectile.SetDirection(new Vector2(direction, 0));
+    IEnumerator ResetAttackAfterAnimation()
+    {
+        // Hämta animationsState
+        if (animator == null)
+            yield break;
+
+        // Vänta på att attackanimation startar
+        yield return new WaitForEndOfFrame();
+
+        // Hämta animations-klippets längd och vänta tills den är klar
+        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        float animationLength = stateInfo.length / stateInfo.speed;
+
+        yield return new WaitForSeconds(animationLength);
+
+        // Återställ attackState
+        ResetAttackState();
+    }
+
+    void ResetAttackState()
+    {
+        // Återställ attackState
+        isAttacking = false;
+        if (animator != null)
+        {
+            animator.SetBool("isAttacking", false);
+        }
+    }
+
+    public void TakeDamage()
+    {
+        // Spela attackanimation innan borttagning
+        isDead = true;
+        StopCoroutine(nameof(ResetAttackAfterAnimation));
+
+        isAttacking = true;
+        if (animator != null)
+        {
+            animator.SetBool("isAttacking", true);
+            StartCoroutine(DestroyAfterAnimation());
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    IEnumerator DestroyAfterAnimation()
+    {
+        // Vänta på att attackanimation startar
+        yield return new WaitForEndOfFrame();
+
+        // Hämta animations-klippets längd
+        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        float animationLength = stateInfo.length / stateInfo.speed;
+
+        // Vänta tills animationen är klar
+        yield return new WaitForSeconds(animationLength);
+
+        // Radera objektet
+        Destroy(gameObject);
     }
 
     public void Die() => isDead = true;

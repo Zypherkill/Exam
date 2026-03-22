@@ -99,7 +99,16 @@ public class EnemyAI : MonoBehaviour
         PlayerMovement2 movement = player.GetComponentInParent<PlayerMovement2>();
         movement.StompBounce();
 
-        Destroy(gameObject, 0.3f);
+        // Play attack animation if stomped on, its similar to a death animation.
+        PikachuLogic pikachu = GetComponent<PikachuLogic>();
+        if (pikachu != null)
+        {
+            pikachu.TakeDamage();
+        }
+        else
+        {
+            Destroy(gameObject, 0.3f);
+        }
     }
 
 }
