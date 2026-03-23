@@ -7,7 +7,8 @@ public class KillZone : MonoBehaviour
         PlayerHealth health = other.GetComponent<PlayerHealth>();
         if (health != null)
         {
-            health.Die();
+            health.Respawn();
         }
     }
 }
+

@@ -22,6 +22,15 @@ public class PlayThenLoad : MonoBehaviour
 
         if (!string.IsNullOrEmpty(nextScene))
         {
+            // Save any current health before transitioning
+            PlayerHealth playerHealth = FindObjectOfType<PlayerHealth>();
+            if (playerHealth != null)
+            {
+                PlayerPrefs.SetInt("PlayerHealth", playerHealth.currentLives);
+                PlayerPrefs.Save();
+                Debug.Log("Health saved before scene transition: " + playerHealth.currentLives);
+            }
+
             SceneManager.LoadScene(nextScene);
         }
         else
