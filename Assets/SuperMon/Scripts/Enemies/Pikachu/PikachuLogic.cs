@@ -16,8 +16,6 @@ public class PikachuLogic : MonoBehaviour
     private float attackTimer;
     private bool isDead;
     private bool isAttacking;
-
-    private Animator animator;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();

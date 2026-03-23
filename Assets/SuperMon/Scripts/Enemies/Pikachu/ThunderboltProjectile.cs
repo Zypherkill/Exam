@@ -4,7 +4,7 @@ public class ThunderboltProjectile : MonoBehaviour
 {
     [SerializeField] private float speed = 5f;
     [SerializeField] private float lifetime = 2f;
-    [SerializeField] private float beamLength = 5f;
+    [SerializeField] private float beamLength = 4f;
 
     private Vector2 direction;
 
@@ -38,7 +38,6 @@ public class ThunderboltProjectile : MonoBehaviour
             if (hit.collider != null && hit.collider.CompareTag("Player"))
             {
                 hit.collider.GetComponent<PlayerHealth>()?.TakeDamage(transform.position.x);
-                Destroy(gameObject);
                 return;
             }
         }
