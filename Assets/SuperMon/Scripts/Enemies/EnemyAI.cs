@@ -2,7 +2,6 @@
 
 public class EnemyAI : MonoBehaviour
 {
-    public float moveSpeed = 2f;
     public LayerMask groundLayer;
     public LayerMask playerLayer;
     public float edgeLookAhead = 0.4f;

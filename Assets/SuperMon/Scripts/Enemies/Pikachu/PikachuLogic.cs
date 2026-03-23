@@ -17,6 +17,7 @@ public class PikachuLogic : MonoBehaviour
     private bool isDead;
     private bool isAttacking;
 
+    private Animator animator;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -28,6 +29,7 @@ public class PikachuLogic : MonoBehaviour
             enabled = false;
             return;
         }
+        animator = GetComponent<Animator>();
 
         if (animator == null)
         {
@@ -94,6 +96,7 @@ public class PikachuLogic : MonoBehaviour
         // Skjut endast om spelaren är tillräckligt nära och framför Pikachu
         if (distanceAbs <= shootingRange && (int)Mathf.Sign(distanceX) == direction)
         {
+            animator.SetBool("isAttacking", true);
             Thunderbolt();
             attackTimer = attackCooldown;
         }
@@ -185,6 +188,4 @@ public class PikachuLogic : MonoBehaviour
         // Radera objektet
         Destroy(gameObject);
     }
-
-    public void Die() => isDead = true;
 }

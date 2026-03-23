@@ -4,8 +4,14 @@ public class ThunderboltProjectile : MonoBehaviour
 {
     [SerializeField] private float speed = 5f;
     [SerializeField] private float lifetime = 2f;
+    [SerializeField] private float beamLength = 5f;
 
     private Vector2 direction;
+
+    void Start()
+    {
+        Destroy(gameObject, lifetime);
+    }
 
     public void SetDirection(Vector2 dir)
     {
@@ -13,22 +19,28 @@ public class ThunderboltProjectile : MonoBehaviour
         direction.y = 0;
     }
 
-    void Start()
-    {
-        Destroy(gameObject, lifetime);
-    }
-
     void Update()
     {
         transform.Translate(direction * speed * Time.deltaTime);
+        CheckBeamCollisions();
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void CheckBeamCollisions()
     {
-        if (collision.CompareTag("Player"))
+        RaycastHit2D[] hits = Physics2D.RaycastAll(
+            transform.position,
+            direction,
+            beamLength
+        );
+
+        foreach (RaycastHit2D hit in hits)
         {
-            collision.GetComponent<PlayerHealth>()?.TakeDamage(transform.position.x);
-            Destroy(gameObject);
+            if (hit.collider != null && hit.collider.CompareTag("Player"))
+            {
+                hit.collider.GetComponent<PlayerHealth>()?.TakeDamage(transform.position.x);
+                Destroy(gameObject);
+                return;
+            }
         }
     }
 }
