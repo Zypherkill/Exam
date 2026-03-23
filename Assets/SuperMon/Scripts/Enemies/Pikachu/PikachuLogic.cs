@@ -2,12 +2,6 @@
 
 public class PikachuLogic : MonoBehaviour
 {
-    [Header("Movement")]
-    [SerializeField] private float moveSpeed = 2f;
-    [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private float edgeLookAhead = 0.4f;
-    [SerializeField] private float wallCheckDistance = 0.2f;
-
     [Header("Attack")]
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint;
@@ -15,10 +9,11 @@ public class PikachuLogic : MonoBehaviour
     [SerializeField] private float attackRange = 5f;
 
     private Rigidbody2D rb;
-    private int direction = 1;
+
     private float attackTimer;
     private bool isDead;
 
+    private Animator animator;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -28,11 +23,8 @@ public class PikachuLogic : MonoBehaviour
             enabled = false;
             return;
         }
+        animator = GetComponent<Animator>();
 
-        if (Random.value > 0.5f)
-            direction = 1;
-        else
-            direction = -1;
     }
 
     void FixedUpdate()
@@ -40,34 +32,8 @@ public class PikachuLogic : MonoBehaviour
         if (isDead)
             return;
 
-        MoveAndTurn();
         attackTimer -= Time.fixedDeltaTime;
         TryThunderbolt();
-    }
-
-    void MoveAndTurn()
-    {
-        rb.linearVelocity = new Vector2(direction * moveSpeed, rb.linearVelocity.y);
-
-        // Vänd sprite mot rörelseriktningen
-        transform.localScale = new Vector3(direction, 1f, 1f);
-
-        // Vänd om det är en vägg framför
-        Vector2 wallCheck = rb.position + new Vector2(direction * 0.4f, 0f);
-        bool hitsWall = Physics2D.Raycast(wallCheck, Vector2.right * direction, wallCheckDistance, groundLayer);
-        if (hitsWall)
-        {
-            direction *= -1;
-            return;
-        }
-
-        // Vänd om det inte finns mark framför
-        Vector2 edgeCheck = rb.position + new Vector2(direction * edgeLookAhead, 0.4f);
-        bool hasGround = Physics2D.Raycast(edgeCheck, Vector2.down, 0.6f, groundLayer);
-        if (!hasGround)
-        {
-            direction *= -1;
-        }
     }
 
     void TryThunderbolt()
@@ -82,8 +48,9 @@ public class PikachuLogic : MonoBehaviour
         float distanceX = player.transform.position.x - transform.position.x;
 
         // Kolla om spelaren är inom range och framför fienden
-        if (Mathf.Abs(distanceX) <= attackRange && Mathf.Sign(distanceX) == direction)
+        if (Mathf.Abs(distanceX) <= attackRange && Mathf.Sign(distanceX) == -1)
         {
+            animator.SetBool("isAttacking", true);
             Thunderbolt();
             attackTimer = attackCooldown;
         }
@@ -99,8 +66,6 @@ public class PikachuLogic : MonoBehaviour
         if (projectile == null)
             return;
 
-        projectile.SetDirection(new Vector2(direction, 0));
+        projectile.SetDirection(new Vector2(-1, 0));
     }
-
-    public void Die() => isDead = true;
 }

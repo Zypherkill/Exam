@@ -96,11 +96,11 @@ public class PlayerMovement2 : MonoBehaviour
             animator.SetBool("isRunning", true);
             animator.SetBool("isIdle", false);
         }
-        else
+        else if (jumpTime < jumpTime - 0.02f)
         {
-            animator.SetBool("isIdle", true);
             animator.SetBool("isJumping", false);
             animator.SetBool("isRunning", false);
+            animator.SetBool("isIdle", true);
         }
 
         if (runInput && !isKnockbackActive)
