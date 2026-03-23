@@ -81,19 +81,10 @@ public class PlayerMovement2 : MonoBehaviour
         // Ett nytt hopp kräver ett nytt knapptryck.
         jumpConsumed = false;
 
-        if (moveInput != 0)
-            spriteRenderer.flipX = moveInput < 0;
-
         if (!groundCheck || holdJump)
         {
             animator.SetBool("isJumping", true);
             animator.SetBool("isRunning", false);
-            animator.SetBool("isIdle", false);
-        }
-        else if (moveInput != 0)
-        {
-            animator.SetBool("isJumping", false);
-            animator.SetBool("isRunning", true);
             animator.SetBool("isIdle", false);
         }
         else if (jumpTime < jumpTime - 0.02f)
@@ -101,6 +92,15 @@ public class PlayerMovement2 : MonoBehaviour
             animator.SetBool("isJumping", false);
             animator.SetBool("isRunning", false);
             animator.SetBool("isIdle", true);
+        }
+        else
+        {
+            if (moveInput != 0)
+                spriteRenderer.flipX = moveInput < 0;
+            
+            animator.SetBool("isJumping", false);
+            animator.SetBool("isRunning", moveInput != 0);
+            animator.SetBool("isIdle", moveInput == 0);
         }
 
         if (runInput && !isKnockbackActive)
