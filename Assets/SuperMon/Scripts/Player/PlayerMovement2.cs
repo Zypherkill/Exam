@@ -23,7 +23,7 @@ public class PlayerMovement2 : MonoBehaviour
     private bool jumpConsumed;
     private bool holdJump;
     private float jumpHoldTimer;
-    private bool isGrounded = true;
+    public bool isGrounded = true;
 
     private Animator animator;
     private bool groundCheck;
@@ -34,10 +34,6 @@ public class PlayerMovement2 : MonoBehaviour
 
     private float defaultGravity = 3f;
     private float fallGravityMultiplier = 1f;
-
-    [SerializeField]
-    private float wallCheckDistance = 0.5f;
-    private bool isAgainstWall = false;
 
     void Awake()
     {
@@ -50,17 +46,18 @@ public class PlayerMovement2 : MonoBehaviour
     {
         GroundCheck();
         bool isKnockbackActive = playerHealth != null && playerHealth.IsKnockbackActive;
+
+        // Sätt rörelse till 0 om spelaren är på vägg, annars applicera normal rörelse
         if (!isKnockbackActive)
             rb.linearVelocityX = moveInput * moveSpeed;
 
         // Resettar hopptillstand nar man landar
-        if (groundCheck && !isGrounded)
+        if (groundCheck)
         {
             animator.SetBool("isJumping", false);
             holdJump = false;
             jumpHoldTimer = 0f;
         }
-        isGrounded = groundCheck;
 
         // Hoppa endast om man ar pa marken
         if (jumpConsumed && groundCheck)
@@ -96,7 +93,7 @@ public class PlayerMovement2 : MonoBehaviour
         else
         {
             if (moveInput != 0)
-                spriteRenderer.flipX = moveInput < 0;
+            spriteRenderer.flipX = moveInput < 0;
             
             animator.SetBool("isJumping", false);
             animator.SetBool("isRunning", moveInput != 0);
@@ -115,6 +112,8 @@ public class PlayerMovement2 : MonoBehaviour
     {
         moveInput = context.ReadValue<float>();
     }
+
+    public float GetMoveInput() => moveInput;
 
     //Funktion för att läsa in hopp
     public void OnJumpInput(InputAction.CallbackContext context)
