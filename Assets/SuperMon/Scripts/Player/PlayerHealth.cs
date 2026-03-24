@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -15,14 +16,32 @@ public class PlayerHealth : MonoBehaviour
     private float knockbackControlLockTimer;
     private SpriteRenderer spriteRenderer;
     private Rigidbody2D rb;
+    private Vector3 spawnPosition;
 
     public bool IsKnockbackActive => knockbackControlLockTimer > 0f;
 
     void Start()
     {
-        currentLives = maxLives;
+        // Load health from persistent storage, or use max if first time
+        if (PlayerPrefs.HasKey("PlayerHealth"))
+        {
+            currentLives = PlayerPrefs.GetInt("PlayerHealth");
+            Debug.Log("Loaded health from PlayerPrefs: " + currentLives);
+        }
+        else
+        {
+            currentLives = maxLives;
+            Debug.Log("No saved health, starting with max: " + maxLives);
+        }
+
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
+        spawnPosition = transform.position;  // Store the starting position
+
+        // Update UI on level load
+        HealthManager healthManager = FindObjectOfType<HealthManager>();
+        if (healthManager != null)
+            healthManager.UpdateHealth(currentLives);
     }
 
     void Update()
@@ -53,18 +72,63 @@ public class PlayerHealth : MonoBehaviour
         SceneManager.LoadScene("GameOver");
     }
 
+    public void Respawn(Vector3 respawnPosition = default)
+    {
+        currentLives--;
+
+        // Save health persistently
+        PlayerPrefs.SetInt("PlayerHealth", currentLives);
+
+        // Update the health UI
+        HealthManager healthManager = FindObjectOfType<HealthManager>();
+        if (healthManager != null)
+            healthManager.UpdateHealth(currentLives);
+
+        if (currentLives <= 0)
+        {
+            // no lives left, go to GameOver scene
+            PlayerPrefs.DeleteKey("PlayerHealth");  // Reset health on game over
+            SceneManager.LoadScene("GameOver");
+        }
+        else
+        {
+            // Move player back to spawn position
+            transform.position = spawnPosition;
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+
+            // Apply invincibility on respawn
+            isInvincible = true;
+            invincibilityTimer = invincibilityDuration;
+            knockbackControlLockTimer = 0f;  // Reset knockback lock
+        }
+    }
+
     // called by the enemy when it hits the player
     public void TakeDamage(float enemyX)
     {
-        if (isInvincible)
+        // Allow final killing blow even if invincible, otherwise block damage during invincibility
+        if (isInvincible && currentLives > 1)
             return;
 
         currentLives--;
 
+        // Save health persistently
+        PlayerPrefs.SetInt("PlayerHealth", currentLives);
+        PlayerPrefs.Save();
+        Debug.Log("Damage taken! Health saved: " + currentLives);
+
+        // Update the health UI
+        HealthManager healthManager = FindObjectOfType<HealthManager>();
+        if (healthManager != null)
+            healthManager.UpdateHealth(currentLives);
+
         if (currentLives <= 0)
         {
-            // no lives left, reload the scene
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            // no lives left, wait before going to GameOver scene
+            PlayerPrefs.DeleteKey("PlayerHealth");
+            Debug.Log("Game Over! Health reset.");
+            StartCoroutine(WaitBeforeGameOver());
         }
         else
         {
@@ -79,6 +143,12 @@ public class PlayerHealth : MonoBehaviour
             isInvincible = true;
             invincibilityTimer = invincibilityDuration;
         }
+    }
+
+    IEnumerator WaitBeforeGameOver()
+    {
+        yield return new WaitForSeconds(1.5f);
+        SceneManager.LoadScene("GameOver");
     }
 
     public void ApplyPush(float sourceX, float horizontalForce)
