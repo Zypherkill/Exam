@@ -1,0 +1,38 @@
+.landing-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+}
+
+
+.landing-page__title {
+    font-size: 5rem;
+    color: white;
+}
+
+.landing-page__game {
+    width: 70%;
+    height: 70%;
+    background-color: #000;
+    border: 2px solid #fff;
+    border-radius: 10px;
+    z-index: 999;
+}
+
+.landing-page__footer {
+    display: flex;
+    align-items: end;
+    position: absolute;
+    bottom: 0;
+    z-index: 0;
+    width: 100vw;
+    justify-content: space-between;
+
+    img {
+        width: 20%;
+    }
+}
