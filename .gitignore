@@ -1,0 +1,20 @@
+# IDE
+.vs/
+.vscode/
+*.code-workspace
+
+# Project files
+*.csproj
+*.sln
+*.slnx
+
+# Build outputs
+*.Player.csproj
+
+# Other folders
+My project/
+obj/
+
+# Allow aseprite files (don't ignore)
+!*.aseprite
+!*.aseprite.meta

@@ -13,10 +13,12 @@ public class SquirtleLogic : MonoBehaviour
 	[SerializeField] private Transform firePoint;
 	[SerializeField] private float attackCooldown = 1.5f;
 	[SerializeField] private float attackRange = 5f;
+	[SerializeField] private float turnCooldown = 0.2f;
 
 	private Rigidbody2D rb;
 	private int direction = 1;
 	private float attackTimer;
+	private float turnTimer;
 	private bool isDead;
 
 	void Start()
@@ -36,6 +38,7 @@ public class SquirtleLogic : MonoBehaviour
 
 		MoveAndTurn();
 		attackTimer -= Time.fixedDeltaTime;
+		turnTimer -= Time.fixedDeltaTime;
 		TryWaterPush();
 	}
 
@@ -50,6 +53,7 @@ public class SquirtleLogic : MonoBehaviour
 		if (hitsWall)
 		{
 			direction *= -1;
+			turnTimer = turnCooldown;
 			return;
 		}
 
@@ -58,12 +62,13 @@ public class SquirtleLogic : MonoBehaviour
 		if (!hasGround)
 		{
 			direction *= -1;
+			turnTimer = turnCooldown;
 		}
 	}
 
 	void TryWaterPush()
 	{
-		if (attackTimer > 0f)
+		if (attackTimer > 0f || turnTimer > 0f)
 			return;
 
 		GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -84,10 +89,10 @@ public class SquirtleLogic : MonoBehaviour
 			return;
 
 		GameObject proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
+
 		WaterPush projectile = proj.GetComponent<WaterPush>();
 		if (projectile == null)
 			return;
-
 		projectile.SetDirection(new Vector2(direction, 0));
 	}
 }

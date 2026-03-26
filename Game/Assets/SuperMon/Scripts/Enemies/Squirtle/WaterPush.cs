@@ -8,10 +8,17 @@ public class WaterPush : MonoBehaviour
 	[SerializeField] private float beamLength = 4f;
 
 	private Vector2 direction;
+	private SpriteRenderer spriteRenderer;
 
 	public void SetDirection(Vector2 dir)
 	{
 		direction = dir.normalized;
+
+		// Vända animationen baserat på riktning
+		if (spriteRenderer == null)
+			spriteRenderer = GetComponent<SpriteRenderer>();
+
+		spriteRenderer.flipX = direction.x > 0;
 	}
 
 	void Start()
@@ -21,7 +28,7 @@ public class WaterPush : MonoBehaviour
 
 	void Update()
 	{
-		transform.Translate(direction * speed * Time.deltaTime);
+		transform.Translate(direction * speed * Time.deltaTime, Space.World);
 		CheckBeamCollisions();
 	}
 
