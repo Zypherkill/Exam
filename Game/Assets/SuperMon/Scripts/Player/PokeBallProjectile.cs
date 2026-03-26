@@ -5,6 +5,7 @@ public class PokeBallProjectile : MonoBehaviour
     [SerializeField] private float speed = 5f;
     [SerializeField] private float travelDistance = 5f;
 
+
     private Vector2 direction;
     private Rigidbody2D rb;
     private Vector3 startPosition;
@@ -15,7 +16,7 @@ public class PokeBallProjectile : MonoBehaviour
         startPosition = transform.position;
     }
 
-    public void SetDirection(Vector2 dir, Vector2 playerVelocity = default)
+    public void SetDirection(Vector2 dir)
     {
         direction = dir.normalized;
         direction.y = 0;
@@ -24,9 +25,7 @@ public class PokeBallProjectile : MonoBehaviour
         //Kollar om rigibody finns och applicerar rörelse
         if (rb != null)
         {
-            // Lägg till spelarens X-hastighet för naturligare rörelse
-            float finalSpeed = speed + Mathf.Abs(playerVelocity.x);
-            rb.linearVelocity = new Vector2(direction.x * finalSpeed, rb.linearVelocity.y);
+            rb.linearVelocity = new Vector2(direction.x * speed, rb.linearVelocity.y);
         }
     }
 
@@ -41,24 +40,10 @@ public class PokeBallProjectile : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Ignorera spelaren
-        if (collision.CompareTag("Player"))
-            return;
-
         // Träffa fiender
         if (collision.CompareTag("Enemy"))
         {
             Destroy(gameObject);
         }
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        // Ignorera spelaren
-        if (collision.gameObject.CompareTag("Player"))
-            return;
-
-        // Förstörs vid kollision med vägg/mark osv
-        Destroy(gameObject);
     }
 }
