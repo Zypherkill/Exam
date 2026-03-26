@@ -6,14 +6,25 @@ public class ThrowPokeBall : MonoBehaviour
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint;
     [SerializeField] private float stillSpeedThreshold = 0.1f;
+    [SerializeField] private float attackCooldown = 1f;
 
     private SpriteRenderer spriteRenderer;
     private Rigidbody2D rb;
+    private float cooldownTimer = 0f;
 
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
+    }
+
+    void Update()
+    {
+        // Minska cooldown-timern
+        if (cooldownTimer > 0)
+        {
+            cooldownTimer -= Time.deltaTime;
+        }
     }
 
     public void OnThrowInput(InputAction.CallbackContext context)
@@ -27,6 +38,10 @@ public class ThrowPokeBall : MonoBehaviour
     void ThrowProjectile()
     {
         if (projectilePrefab == null || firePoint == null)
+            return;
+
+        // Kontrollera cooldown
+        if (cooldownTimer > 0)
             return;
 
         // Kontrollera att spelaren står still
@@ -44,5 +59,8 @@ public class ThrowPokeBall : MonoBehaviour
         {
             projectile.SetDirection(new Vector2(direction, 0));
         }
+
+        // Starta cooldown
+        cooldownTimer = attackCooldown;
     }
 }

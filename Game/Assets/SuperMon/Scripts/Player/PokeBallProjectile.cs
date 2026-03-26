@@ -4,11 +4,13 @@ public class PokeBallProjectile : MonoBehaviour
 {
     [SerializeField] private float speed = 5f;
     [SerializeField] private float travelDistance = 5f;
-
+    [SerializeField] private GameObject pokeCapture;
+    [SerializeField] private float dropHeightOffset = 1.5f;
 
     private Vector2 direction;
     private Rigidbody2D rb;
     private Vector3 startPosition;
+    private bool isCaptured = false;
 
     void Awake()
     {
@@ -40,10 +42,25 @@ public class PokeBallProjectile : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Träffa fiender
+        if (isCaptured)
+            return;
+
+        // Träffa fiender - förstör både fienden och projektilen
         if (collision.CompareTag("Enemy"))
         {
+            isCaptured = true;
+            HasBeenCaptured(collision.transform.position);
+            Destroy(collision.gameObject);
             Destroy(gameObject);
+        }
+    }
+
+    void HasBeenCaptured(Vector2 position)
+    {
+        if (pokeCapture != null)
+        {
+            Vector2 pokeballSpawn = new (position.x, position.y + dropHeightOffset);
+            Instantiate(pokeCapture, pokeballSpawn, Quaternion.identity);
         }
     }
 }
