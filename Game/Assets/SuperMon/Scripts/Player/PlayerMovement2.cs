@@ -3,34 +3,25 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement2 : MonoBehaviour
 {
-    [SerializeField]
-    private float moveSpeed;
-    [SerializeField]
-    private float jumpForce;
-    [SerializeField]
-    private float jumpTime = 0.1f;
+    [SerializeField] private float moveSpeed;
+    [SerializeField] private float jumpForce;
+    [SerializeField] private float jumpTime = 0.1f;
 
-    [SerializeField]
-    private float stompForce;
+    [SerializeField] private float stompForce;
 
-    [SerializeField]
-    private float runSpeedMultiplier = 1.5f;
+    [SerializeField] private float runSpeedMultiplier = 1.5f;
     private Rigidbody2D rb;
-
     private float moveInput;
-
     private bool runInput;
     private bool jumpConsumed;
     private bool holdJump;
     private float jumpHoldTimer;
     public bool isGrounded = true;
-
     private Animator animator;
     private bool groundCheck;
     private PlayerHealth playerHealth;
 
-    [SerializeField]
-    private SpriteRenderer spriteRenderer;
+    [SerializeField] private SpriteRenderer spriteRenderer;
 
     private float defaultGravity = 3f;
     private float fallGravityMultiplier = 1f;
