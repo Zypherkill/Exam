@@ -9,6 +9,7 @@ public class WaterPush : MonoBehaviour
 
 	private Vector2 direction;
 	private SpriteRenderer spriteRenderer;
+	private bool hasHit = false;
 
 	public void SetDirection(Vector2 dir)
 	{
@@ -29,26 +30,24 @@ public class WaterPush : MonoBehaviour
 	void Update()
 	{
 		transform.Translate(direction * speed * Time.deltaTime, Space.World);
-		CheckBeamCollisions();
 	}
 
-	private void CheckBeamCollisions()
+	private void OnTriggerStay2D(Collider2D collision)
 	{
-		RaycastHit2D[] hits = Physics2D.RaycastAll(
-			transform.position,
-			direction,
-			beamLength
-		);
+		// Only hit once per projectile
+		if (hasHit)
+			return;
 
-		foreach (RaycastHit2D hit in hits)
+		if (collision.CompareTag("Player"))
 		{
-			if (hit.collider != null && hit.collider.CompareTag("Player"))
+			hasHit = true;
+			PlayerHealth playerHealth = collision.GetComponentInParent<PlayerHealth>();
+			if (playerHealth != null)
 			{
-				PlayerHealth playerHealth = hit.collider.GetComponentInParent<PlayerHealth>();
-				playerHealth.ApplyPush(transform.position.x, pushForce);
-				Destroy(gameObject);
-				return;
+				float pushSourceX = collision.transform.position.x - direction.x * 10f;
+				playerHealth.ApplyPush(pushSourceX, pushForce);
 			}
+			Destroy(gameObject);
 		}
 	}
 }
