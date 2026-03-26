@@ -1,16 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Jersey+10&display=swap');
+@font-face {
+  font-family: 'PokemonSolid';
+  src: url('/fonts/Pokemon Solid.ttf') format('truetype');
+}
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Jersey 10", sans-serif;
+  font-family: 'PokemonSolid';
   font-weight: 400;
   font-style: normal;
 }
 
 .app {
-  font-family: 'Arial', sans-serif;
+  font-family: 'PokemonSolid';
   background: linear-gradient(180deg, #2C787C 30%, #0DFF00 80%);
   min-height: 100vh;
   display: flex;
