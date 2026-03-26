@@ -11,6 +11,16 @@
 # Build outputs
 *.Player.csproj
 
+# Unity generated folders
+Library/
+Logs/
+Packages/
+ProjectSettings/
+UserSettings/
+Temp/
+Builds/
+MemoryCaptures/
+
 # Other folders
 My project/
 obj/
