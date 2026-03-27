@@ -60,7 +60,13 @@ public class PokeBallProjectile : MonoBehaviour
         if (pokeCapture != null)
         {
             Vector2 pokeballSpawn = new (position.x, position.y + dropHeightOffset);
-            Instantiate(pokeCapture, pokeballSpawn, Quaternion.identity);
+            GameObject pokeball = Instantiate(pokeCapture, pokeballSpawn, Quaternion.identity);
+            
+            // Lägg till pickup-scriptet om det inte redan finns
+            if (pokeball.GetComponent<PokeBallPickup>() == null)
+            {
+                pokeball.AddComponent<PokeBallPickup>();
+            }
         }
     }
 }
