@@ -82,7 +82,7 @@ public class EnemyAI : MonoBehaviour
         else if (damageCooldown <= 0f)
         {
             // enemy touches player from the side, damage the player
-            playerHealth.TakeDamage(transform.position.x);
+            playerHealth.TakeDamage(transform.position.x, "normal");
             damageCooldown = 0.5f;
         }
     }

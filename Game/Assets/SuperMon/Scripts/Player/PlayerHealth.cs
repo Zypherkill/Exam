@@ -16,7 +16,9 @@ public class PlayerHealth : MonoBehaviour
     private float knockbackControlLockTimer;
     private SpriteRenderer spriteRenderer;
     private Rigidbody2D rb;
+    private Animator animator;
     private Vector3 spawnPosition;
+    private bool isDead;
 
     public bool IsKnockbackActive => knockbackControlLockTimer > 0f;
 
@@ -36,7 +38,12 @@ public class PlayerHealth : MonoBehaviour
 
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
         spawnPosition = transform.position;  // Store the starting position
+
+        // Set animator to alive state
+        if (animator != null)
+            animator.SetBool("isAlive", true);
 
         // Update UI on level load
         HealthManager healthManager = FindObjectOfType<HealthManager>();
@@ -69,6 +76,7 @@ public class PlayerHealth : MonoBehaviour
 
     public void Die()
     {
+        animator.SetTrigger("death");
         SceneManager.LoadScene("GameOver");
     }
 
@@ -107,6 +115,12 @@ public class PlayerHealth : MonoBehaviour
     // called by the enemy when it hits the player
     public void TakeDamage(float enemyX)
     {
+        TakeDamage(enemyX, "normal");
+    }
+
+    // overload to specify damage type
+    public void TakeDamage(float enemyX, string damageType)
+    {
         // Allow final killing blow even if invincible, otherwise block damage during invincibility
         if (isInvincible && currentLives > 1)
             return;
@@ -118,6 +132,15 @@ public class PlayerHealth : MonoBehaviour
         PlayerPrefs.Save();
         Debug.Log("Damage taken! Health saved: " + currentLives);
 
+        // Trigger appropriate damage animation
+        if (animator != null)
+        {
+            if (damageType == "thunder")
+                animator.SetTrigger("takingThunderDamage");
+            else
+                animator.SetTrigger("takingNormalDamage");
+        }
+
         // Update the health UI
         HealthManager healthManager = FindObjectOfType<HealthManager>();
         if (healthManager != null)
@@ -125,6 +148,15 @@ public class PlayerHealth : MonoBehaviour
 
         if (currentLives <= 0)
         {
+            isDead = true;
+
+            // Tell animator player is dead (so damage animations won't transition to idle)
+            if (animator != null)
+            {
+                animator.SetBool("isAlive", false);
+                animator.SetTrigger("isDying");
+            }
+
             // no lives left, wait before going to GameOver scene
             PlayerPrefs.DeleteKey("PlayerHealth");
             Debug.Log("Game Over! Health reset.");
@@ -162,6 +194,18 @@ public class PlayerHealth : MonoBehaviour
 
         rb.linearVelocity = new Vector2(pushDir * horizontalForce, rb.linearVelocity.y);
         knockbackControlLockTimer = knockbackControlLockDuration;
+    }
+
+    // Play damage animation without dealing damage (used by non-damaging projectiles like WaterPush)
+    public void PlayDamageAnimation(string damageType)
+    {
+        if (animator != null)
+        {
+            if (damageType == "thunder")
+                animator.SetTrigger("takingThunderDamage");
+            else
+                animator.SetTrigger("takingNormalDamage");
+        }
     }
 }
 

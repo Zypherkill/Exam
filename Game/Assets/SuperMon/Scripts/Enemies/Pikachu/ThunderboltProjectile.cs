@@ -27,7 +27,13 @@ public class ThunderboltProjectile : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            collision.GetComponent<PlayerHealth>()?.TakeDamage(transform.position.x);
+            PlayerHealth playerHealth = collision.GetComponent<PlayerHealth>();
+            if (playerHealth != null)
+            {
+                playerHealth.TakeDamage(transform.position.x, "thunder");
+                // Apply knockback like WaterPush does
+                playerHealth.ApplyPush(transform.position.x, 6f);
+            }
             Destroy(gameObject);
         }
     }
