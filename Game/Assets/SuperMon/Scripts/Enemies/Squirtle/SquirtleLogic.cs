@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class SquirtleLogic : MonoBehaviour
 {
@@ -14,16 +15,21 @@ public class SquirtleLogic : MonoBehaviour
 	[SerializeField] private float attackCooldown = 1.5f;
 	[SerializeField] private float attackRange = 5f;
 	[SerializeField] private float turnCooldown = 0.2f;
+	[SerializeField] private float preAttackDelay = 0.5f;
+	[SerializeField] private float postAttackDelay = 0.5f;
 
 	private Rigidbody2D rb;
+	private Animator animator;
 	private int direction = 1;
 	private float attackTimer;
 	private float turnTimer;
 	private bool isDead;
+	private bool isAttacking;
 
 	void Start()
 	{
 		rb = GetComponent<Rigidbody2D>();
+		animator = GetComponent<Animator>();
 
 		if (Random.value > 0.5f)
 			direction = 1;
@@ -44,6 +50,13 @@ public class SquirtleLogic : MonoBehaviour
 
 	void MoveAndTurn()
 	{
+		// Don't move during attack sequence
+		if (isAttacking)
+		{
+			rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
+			return;
+		}
+
 		rb.linearVelocity = new Vector2(direction * moveSpeed, rb.linearVelocity.y);
 
 		transform.localScale = new Vector3(direction, 1f, 1f);
@@ -68,7 +81,7 @@ public class SquirtleLogic : MonoBehaviour
 
 	void TryWaterPush()
 	{
-		if (attackTimer > 0f || turnTimer > 0f)
+		if (attackTimer > 0f || turnTimer > 0f || isAttacking)
 			return;
 
 		GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -78,21 +91,58 @@ public class SquirtleLogic : MonoBehaviour
 		float distanceX = player.transform.position.x - transform.position.x;
 		if (Mathf.Abs(distanceX) <= attackRange && Mathf.Sign(distanceX) == direction)
 		{
-			ShootWaterPush();
+			StartCoroutine(AttackSequence());
 			attackTimer = attackCooldown;
 		}
 	}
 
+	IEnumerator AttackSequence()
+	{
+		isAttacking = true;
+
+		// Pre-attack delay (stop and prepare)
+		yield return new WaitForSeconds(preAttackDelay);
+
+		// Attack animation and projectile
+		ShootWaterPush();
+
+		// Post-attack delay (recovery)
+		yield return new WaitForSeconds(postAttackDelay);
+
+		isAttacking = false;
+	}
+
 	void ShootWaterPush()
 	{
+		// Start attack animation immediately
+		if (animator != null)
+			animator.SetBool("isAttacking", true);
+
+		// Delay projectile to match animation
+		StartCoroutine(DelayedShoot());
+	}
+
+	IEnumerator DelayedShoot()
+	{
+		yield return new WaitForSeconds(0.3f);
+
 		if (projectilePrefab == null || firePoint == null)
-			return;
+			yield break;
 
 		GameObject proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
 
 		WaterPush projectile = proj.GetComponent<WaterPush>();
-		if (projectile == null)
-			return;
-		projectile.SetDirection(new Vector2(direction, 0));
+		if (projectile != null)
+			projectile.SetDirection(new Vector2(direction, 0));
+
+		// Stop attack animation
+		StartCoroutine(StopAttackAnimation());
+	}
+
+	IEnumerator StopAttackAnimation()
+	{
+		yield return new WaitForSeconds(0.3f); // Adjust timing to match animation length
+		if (animator != null)
+			animator.SetBool("isAttacking", false);
 	}
 }
