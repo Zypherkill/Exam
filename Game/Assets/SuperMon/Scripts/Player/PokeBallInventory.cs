@@ -26,6 +26,9 @@ public class PokeBallInventory : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
         
+        // Clear the saved pokeball count to start fresh
+        PlayerPrefs.DeleteKey("PokeBallCount");
+        
         // Load pokeballs from persistent storage, or use starting amount if first time
         if (PlayerPrefs.HasKey("PokeBallCount"))
         {
