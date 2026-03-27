@@ -51,7 +51,7 @@ public class ThrowPokeBall : MonoBehaviour
         }
 
         // Kontrollera att det finns pokebollar i inventoryt
-        if (PokeBallInventory.Instance == null || !PokeBallInventory.Instance.UsePokeBall())
+        if (Inventory.Instance == null || !Inventory.Instance.UsePokeBall())
         {
             Debug.Log("Inga pokebollar kvar!");
             return;

@@ -1,19 +1,22 @@
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
-public class PokeBallInventory : MonoBehaviour
+public class Inventory : MonoBehaviour
 {
     [SerializeField] private int maxPokeBalls = 5;
-    [SerializeField] private int startingPokeBalls = 5;
 
     private int currentPokeBalls;
+    private List<CaughtPokemonData> caughtPokemon = new List<CaughtPokemonData>();
 
-    public static PokeBallInventory Instance { get; private set; }
+    public static Inventory Instance { get; private set; }
 
     public event Action<int> OnPokeBallCountChanged;
+    public event Action<List<CaughtPokemonData>> OnCaughtPokemonChanged;
 
     public int CurrentPokeBalls => currentPokeBalls;
     public int MaxPokeBalls => maxPokeBalls;
+    public List<CaughtPokemonData> CaughtPokemon => caughtPokemon;
 
     void Awake()
     {
@@ -26,19 +29,16 @@ public class PokeBallInventory : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
         
-        // Clear the saved pokeball count to start fresh
-        PlayerPrefs.DeleteKey("PokeBallCount");
-        
-        // Load pokeballs from persistent storage, or use starting amount if first time
+        // Ladda pokebollar från sparad lagring
         if (PlayerPrefs.HasKey("PokeBallCount"))
         {
             currentPokeBalls = PlayerPrefs.GetInt("PokeBallCount");
-            Debug.Log("Loaded pokeballs from PlayerPrefs: " + currentPokeBalls);
+            Debug.Log("Laddade pokebollar från PlayerPrefs: " + currentPokeBalls);
         }
         else
         {
-            currentPokeBalls = startingPokeBalls;
-            Debug.Log("Starting with pokeballs: " + startingPokeBalls);
+            currentPokeBalls = 0;
+            Debug.Log("Startar utan pokebollar: 0");
         }
 
         OnPokeBallCountChanged?.Invoke(currentPokeBalls);
@@ -61,13 +61,26 @@ public class PokeBallInventory : MonoBehaviour
         currentPokeBalls = Mathf.Min(currentPokeBalls + amount, maxPokeBalls);
         PlayerPrefs.SetInt("PokeBallCount", currentPokeBalls);
         OnPokeBallCountChanged?.Invoke(currentPokeBalls);
-        Debug.Log("Picked up pokeball! Total: " + currentPokeBalls);
+        Debug.Log("Plockade upp en pokeboll! Totalt: " + currentPokeBalls);
+    }
+
+    public void CatchPokemon(PokemonData pokemonData)
+    {
+        if (pokemonData != null)
+        {
+            CaughtPokemonData caught = new CaughtPokemonData(pokemonData);
+            caughtPokemon.Add(caught);
+            Debug.Log("✓ Fångade: " + caught.GetPokemonName() + " | Total fångade: " + caughtPokemon.Count);
+            OnCaughtPokemonChanged?.Invoke(caughtPokemon);
+        }
     }
 
     public void ResetInventory()
     {
-        currentPokeBalls = startingPokeBalls;
+        currentPokeBalls = maxPokeBalls;
+        caughtPokemon.Clear();
         PlayerPrefs.SetInt("PokeBallCount", currentPokeBalls);
         OnPokeBallCountChanged?.Invoke(currentPokeBalls);
+        OnCaughtPokemonChanged?.Invoke(caughtPokemon);
     }
 }

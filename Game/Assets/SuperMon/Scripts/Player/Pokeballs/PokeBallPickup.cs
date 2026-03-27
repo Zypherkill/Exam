@@ -6,10 +6,16 @@ public class PokeBallPickup : MonoBehaviour
     
     private float creationTime;
     private bool hasBeenPickedUp = false;
+    private PokemonData caughtPokemon;
 
     void Start()
     {
         creationTime = Time.time;
+    }
+
+    public void SetCaughtPokemon(PokemonData pokemon)
+    {
+        caughtPokemon = pokemon;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -25,15 +31,24 @@ public class PokeBallPickup : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             hasBeenPickedUp = true;
-            PickupPokeBall();
+            Pickup();
         }
     }
 
-    void PickupPokeBall()
+    void Pickup()
     {
-        if (PokeBallInventory.Instance != null)
+        if (Inventory.Instance != null)
         {
-            PokeBallInventory.Instance.AddPokeBall();
+            if (caughtPokemon != null)
+            {
+                // Lägg till fångad Pokémon i inventoriet
+                Inventory.Instance.CatchPokemon(caughtPokemon);
+            }
+            else
+            {
+                // Fallback - lägg bara till en normal pokeboll
+                Inventory.Instance.AddPokeBall();
+            }
         }
 
         Destroy(gameObject);
