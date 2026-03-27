@@ -16,6 +16,11 @@ public class PokeBallProjectile : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         startPosition = transform.position;
+
+        // If this is a thrown projectile, make sure collider is NOT a trigger
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null)
+            col.isTrigger = false;
     }
 
     public void SetDirection(Vector2 dir)
@@ -23,11 +28,18 @@ public class PokeBallProjectile : MonoBehaviour
         direction = dir.normalized;
         direction.y = 0;
         startPosition = transform.position;
-        
+
+        Debug.Log("SetDirection called! Dir: " + direction + " | Speed: " + speed);
+
         //Kollar om rigibody finns och applicerar rörelse
         if (rb != null)
         {
-            rb.linearVelocity = new Vector2(direction.x * speed, rb.linearVelocity.y);
+            rb.linearVelocity = new Vector2(direction.x * speed, 0f);
+            Debug.Log("Velocity set to: " + rb.linearVelocity);
+        }
+        else
+        {
+            Debug.LogError("Rigidbody2D is NULL!");
         }
     }
 
@@ -60,25 +72,17 @@ public class PokeBallProjectile : MonoBehaviour
     {
         if (pokeCapture != null)
         {
-            Vector2 pokeballSpawn = new (position.x, position.y + dropHeightOffset);
+            Vector2 pokeballSpawn = new(position.x, position.y + dropHeightOffset);
             GameObject pokeball = Instantiate(pokeCapture, pokeballSpawn, Quaternion.identity);
-            
-            // Lägg till pickup-scriptet om det inte redan finns
-            if (pokeball.GetComponent<PokeBallPickup>() == null)
+
+            // Get the pickup script (it should already be on the prefab)
+            PokeBallPickup pickup = pokeball.GetComponent<PokeBallPickup>();
+
+            if (pickup != null && pokemonData != null)
             {
-                PokeBallPickup pickup = pokeball.AddComponent<PokeBallPickup>();
-                
-                // Kopiera Pokémon-data från fienden till pokebollen
-                if (pokemonData != null)
-                {
-                    // Skapa en kopia av PokemonData på pokebollen
-                    PokemonData ballPokemon = pokeball.AddComponent<PokemonData>();
-                    ballPokemon.CopyFrom(pokemonData);
-                    
-                    // Lagra referensen för pickup
-                    pickup.SetCaughtPokemon(ballPokemon);
-                    Debug.Log("✓ Fångade: " + pokemonData.GetPokemonName());
-                }
+                // Set the caught pokemon data directly
+                pickup.SetCaughtPokemon(pokemonData);
+                Debug.Log("✓ Fångade: " + pokemonData.GetPokemonName());
             }
         }
     }

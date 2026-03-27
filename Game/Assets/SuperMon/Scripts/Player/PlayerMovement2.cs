@@ -69,23 +69,18 @@ public class PlayerMovement2 : MonoBehaviour
         // Ett nytt hopp kräver ett nytt knapptryck.
         jumpConsumed = false;
 
+        // Always flip sprite based on movement input
+        if (moveInput != 0)
+            transform.localScale = new Vector3(moveInput < 0 ? -1f : 1f, 1f, 1f);
+
         if (!groundCheck || holdJump)
         {
             animator.SetBool("isJumping", true);
             animator.SetBool("isRunning", false);
             animator.SetBool("isIdle", false);
         }
-        else if (jumpTime < jumpTime - 0.02f)
-        {
-            animator.SetBool("isJumping", false);
-            animator.SetBool("isRunning", false);
-            animator.SetBool("isIdle", true);
-        }
         else
         {
-            if (moveInput != 0)
-            spriteRenderer.flipX = moveInput < 0;
-            
             animator.SetBool("isJumping", false);
             animator.SetBool("isRunning", moveInput != 0);
             animator.SetBool("isIdle", moveInput == 0);

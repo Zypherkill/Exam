@@ -27,8 +27,8 @@ public class Inventory : MonoBehaviour
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
-        
+
+
         // Ladda pokebollar från sparad lagring
         if (PlayerPrefs.HasKey("PokeBallCount"))
         {
