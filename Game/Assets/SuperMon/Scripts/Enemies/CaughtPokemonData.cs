@@ -4,8 +4,6 @@ using System;
 public class CaughtPokemonData
 {
     public PokemonData.PokemonType type;
-    public int level;
-    public int experience;
     public DateTime caughtTime;
 
     public CaughtPokemonData(PokemonData source)
@@ -13,8 +11,6 @@ public class CaughtPokemonData
         if (source != null)
         {
             type = source.Type;
-            level = source.Level;
-            experience = source.Experience;
             caughtTime = DateTime.Now;
         }
     }
