@@ -50,6 +50,13 @@ public class ThrowPokeBall : MonoBehaviour
             return;
         }
 
+        // Kontrollera att det finns pokebollar i inventoryt
+        if (Inventory.Instance == null || !Inventory.Instance.UsePokeBall())
+        {
+            Debug.Log("Inga pokebollar kvar!");
+            return;
+        }
+
         // Bestäm riktning baserat på SpriteRenderer.flipX
         float direction = spriteRenderer.flipX ? -1f : 1f;
 

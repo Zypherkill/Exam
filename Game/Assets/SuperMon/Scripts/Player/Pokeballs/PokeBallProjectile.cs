@@ -49,18 +49,37 @@ public class PokeBallProjectile : MonoBehaviour
         if (collision.CompareTag("Enemy"))
         {
             isCaptured = true;
-            HasBeenCaptured(collision.transform.position);
-            Destroy(collision.gameObject);
+            PokemonData pokemonData = collision.GetComponent<PokemonData>();
+            HasBeenCaptured(collision.transform.position, pokemonData);
+            Destroy(collision.gameObject);  // Förstör fienden EFTER att data sparats
             Destroy(gameObject);
         }
     }
 
-    void HasBeenCaptured(Vector2 position)
+    void HasBeenCaptured(Vector2 position, PokemonData pokemonData)
     {
         if (pokeCapture != null)
         {
             Vector2 pokeballSpawn = new (position.x, position.y + dropHeightOffset);
-            Instantiate(pokeCapture, pokeballSpawn, Quaternion.identity);
+            GameObject pokeball = Instantiate(pokeCapture, pokeballSpawn, Quaternion.identity);
+            
+            // Lägg till pickup-scriptet om det inte redan finns
+            if (pokeball.GetComponent<PokeBallPickup>() == null)
+            {
+                PokeBallPickup pickup = pokeball.AddComponent<PokeBallPickup>();
+                
+                // Kopiera Pokémon-data från fienden till pokebollen
+                if (pokemonData != null)
+                {
+                    // Skapa en kopia av PokemonData på pokebollen
+                    PokemonData ballPokemon = pokeball.AddComponent<PokemonData>();
+                    ballPokemon.CopyFrom(pokemonData);
+                    
+                    // Lagra referensen för pickup
+                    pickup.SetCaughtPokemon(ballPokemon);
+                    Debug.Log("✓ Fångade: " + pokemonData.GetPokemonName());
+                }
+            }
         }
     }
 }
