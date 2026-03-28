@@ -25,6 +25,16 @@ MemoryCaptures/
 My project/
 obj/
 
+# Unity generated folders
+Library/
+Logs/
+Packages/
+ProjectSettings/
+UserSettings/
+Temp/
+Builds/
+MemoryCaptures/
+
 # Allow aseprite files (don't ignore)
 !*.aseprite
 !*.aseprite.meta

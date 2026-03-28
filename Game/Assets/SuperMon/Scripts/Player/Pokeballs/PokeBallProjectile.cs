@@ -6,6 +6,7 @@ public class PokeBallProjectile : MonoBehaviour
     [SerializeField] private float travelDistance = 5f;
     [SerializeField] private GameObject pokeCapture;
     [SerializeField] private float dropHeightOffset = 1.5f;
+    [SerializeField] private int capturePoints = 50;
 
     private Vector2 direction;
     private Rigidbody2D rb;
@@ -70,6 +71,10 @@ public class PokeBallProjectile : MonoBehaviour
 
     void HasBeenCaptured(Vector2 position, PokemonData pokemonData)
     {
+        // Add points for capturing Pokemon
+        if (ScoreSystem.instance != null)
+            ScoreSystem.instance.AddPoints(capturePoints);
+
         if (pokeCapture != null)
         {
             Vector2 pokeballSpawn = new(position.x, position.y + dropHeightOffset);

@@ -9,6 +9,7 @@ public class PlayerHealth : MonoBehaviour
     public float knockbackForceX = 6f;
     public float knockbackForceY = 5f;
     public float knockbackControlLockDuration = 0.2f;
+    [SerializeField] private AudioClip hurtSound;
 
     public int currentLives;
     private bool isInvincible;
@@ -18,7 +19,7 @@ public class PlayerHealth : MonoBehaviour
     private Rigidbody2D rb;
     private Animator animator;
     private Vector3 spawnPosition;
-    private bool isDead;
+    private AudioSource audioSource;
 
     public bool IsKnockbackActive => knockbackControlLockTimer > 0f;
 
@@ -39,6 +40,7 @@ public class PlayerHealth : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
         spawnPosition = transform.position;  // Store the starting position
 
         // Set animator to alive state
@@ -77,6 +79,11 @@ public class PlayerHealth : MonoBehaviour
     public void Die()
     {
         animator.SetTrigger("death");
+
+        // Reset score on game over
+        if (ScoreSystem.instance != null)
+            ScoreSystem.instance.ResetScore();
+
         SceneManager.LoadScene("GameOver");
     }
 
@@ -96,6 +103,11 @@ public class PlayerHealth : MonoBehaviour
         {
             // no lives left, go to GameOver scene
             PlayerPrefs.DeleteKey("PlayerHealth");  // Reset health on game over
+
+            // Reset score on game over
+            if (ScoreSystem.instance != null)
+                ScoreSystem.instance.ResetScore();
+
             SceneManager.LoadScene("GameOver");
         }
         else
@@ -116,6 +128,15 @@ public class PlayerHealth : MonoBehaviour
     public void TakeDamage(float enemyX)
     {
         TakeDamage(enemyX, "normal");
+    }
+
+    void PlayHurtSound()
+    {
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
+
+        if (audioSource != null && hurtSound != null)
+            audioSource.PlayOneShot(hurtSound);
     }
 
     // overload to specify damage type
@@ -148,7 +169,7 @@ public class PlayerHealth : MonoBehaviour
 
         if (currentLives <= 0)
         {
-            isDead = true;
+            PlayHurtSound();
 
             // Tell animator player is dead (so damage animations won't transition to idle)
             if (animator != null)
@@ -174,6 +195,7 @@ public class PlayerHealth : MonoBehaviour
 
             isInvincible = true;
             invincibilityTimer = invincibilityDuration;
+            PlayHurtSound();
         }
     }
 
@@ -194,6 +216,7 @@ public class PlayerHealth : MonoBehaviour
 
         rb.linearVelocity = new Vector2(pushDir * horizontalForce, rb.linearVelocity.y);
         knockbackControlLockTimer = knockbackControlLockDuration;
+        PlayHurtSound();
     }
 
     // Play damage animation without dealing damage (used by non-damaging projectiles like WaterPush)

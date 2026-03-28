@@ -22,15 +22,18 @@ public class PlayerMovement2 : MonoBehaviour
     private PlayerHealth playerHealth;
 
     [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private AudioClip jumpSound;
 
     private float defaultGravity = 3f;
     private float fallGravityMultiplier = 1f;
+    private AudioSource audioSource;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         playerHealth = GetComponent<PlayerHealth>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     void FixedUpdate()
@@ -57,6 +60,7 @@ public class PlayerMovement2 : MonoBehaviour
             holdJump = true;
             jumpHoldTimer = 0f;
             animator.SetBool("isJumping", true);
+            PlayJumpSound();
         }
 
         // Förläng hoppet under samma knapptryckning upp till max tid.
@@ -139,5 +143,11 @@ public class PlayerMovement2 : MonoBehaviour
     {
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, stompForce);
         rb.AddForce(Vector2.up * 8, ForceMode2D.Impulse);
+    }
+
+    void PlayJumpSound()
+    {
+        if (audioSource != null && jumpSound != null)
+            audioSource.PlayOneShot(jumpSound);
     }
 }

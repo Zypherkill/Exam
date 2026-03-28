@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PokeBallPickup : MonoBehaviour
 {
-    [SerializeField] private float pickupDelay = 0.5f;
+    [SerializeField] private float pickupDelay = 0.1f;
 
     private float creationTime;
     private bool hasBeenPickedUp = false;
