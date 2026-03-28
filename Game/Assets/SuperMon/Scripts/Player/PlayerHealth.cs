@@ -48,7 +48,7 @@ public class PlayerHealth : MonoBehaviour
             animator.SetBool("isAlive", true);
 
         // Update UI on level load
-        HealthManager healthManager = FindObjectOfType<HealthManager>();
+        HealthManager healthManager = FindFirstObjectByType<HealthManager>();
         if (healthManager != null)
             healthManager.UpdateHealth(currentLives);
     }
@@ -95,7 +95,7 @@ public class PlayerHealth : MonoBehaviour
         PlayerPrefs.SetInt("PlayerHealth", currentLives);
 
         // Update the health UI
-        HealthManager healthManager = FindObjectOfType<HealthManager>();
+        HealthManager healthManager = FindFirstObjectByType<HealthManager>();
         if (healthManager != null)
             healthManager.UpdateHealth(currentLives);
 
@@ -163,7 +163,7 @@ public class PlayerHealth : MonoBehaviour
         }
 
         // Update the health UI
-        HealthManager healthManager = FindObjectOfType<HealthManager>();
+        HealthManager healthManager = FindFirstObjectByType<HealthManager>();
         if (healthManager != null)
             healthManager.UpdateHealth(currentLives);
 
