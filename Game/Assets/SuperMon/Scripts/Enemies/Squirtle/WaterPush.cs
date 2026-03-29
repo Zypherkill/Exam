@@ -45,6 +45,7 @@ public class WaterPush : MonoBehaviour
 			if (playerHealth != null)
 			{
 				float pushSourceX = collision.transform.position.x - direction.x * 10f;
+				playerHealth.PlayDamageAnimation("normal");
 				playerHealth.ApplyPush(pushSourceX, pushForce);
 			}
 			Destroy(gameObject);

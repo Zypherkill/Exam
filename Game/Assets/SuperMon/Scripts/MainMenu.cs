@@ -20,6 +20,21 @@ public class MainMenu : MonoBehaviour
     // Load a level by build index
     public void LoadLevel(int buildIndex)
     {
+        // Reset health and pokeballs for a fresh game start
+        Debug.Log("LoadLevel called - Resetting health and pokeballs");
+        PlayerPrefs.DeleteKey("PlayerHealth");
+        PlayerPrefs.DeleteKey("PokeBallCount");
+        PlayerPrefs.Save();
+
+        // Clear any DontDestroyOnLoad Inventory from previous runs
+        Inventory inv = FindObjectOfType<Inventory>();
+        if (inv != null)
+        {
+            Debug.Log("Destroying old Inventory instance");
+            Destroy(inv.gameObject);
+        }
+
+        Debug.Log("PlayerPrefs cleared. Loading scene: " + buildIndex);
         SceneManager.LoadScene(buildIndex);
     }
 

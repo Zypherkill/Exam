@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class PokeBallPickup : MonoBehaviour
 {
-    [SerializeField] private float pickupDelay = 0.5f;
-    
+    [SerializeField] private float pickupDelay = 0.1f;
+
     private float creationTime;
     private bool hasBeenPickedUp = false;
     private PokemonData caughtPokemon;
@@ -18,7 +18,7 @@ public class PokeBallPickup : MonoBehaviour
         caughtPokemon = pokemon;
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         // En tid innan den kan plockas upp (för att undvika att plocka upp den för tidigt)
         if (Time.time - creationTime < pickupDelay)

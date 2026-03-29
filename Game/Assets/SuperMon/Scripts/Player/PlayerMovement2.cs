@@ -22,15 +22,18 @@ public class PlayerMovement2 : MonoBehaviour
     private PlayerHealth playerHealth;
 
     [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private AudioClip jumpSound;
 
     private float defaultGravity = 3f;
     private float fallGravityMultiplier = 1f;
+    private AudioSource audioSource;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         playerHealth = GetComponent<PlayerHealth>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     void FixedUpdate()
@@ -57,6 +60,7 @@ public class PlayerMovement2 : MonoBehaviour
             holdJump = true;
             jumpHoldTimer = 0f;
             animator.SetBool("isJumping", true);
+            PlayJumpSound();
         }
 
         // Förläng hoppet under samma knapptryckning upp till max tid.
@@ -69,23 +73,18 @@ public class PlayerMovement2 : MonoBehaviour
         // Ett nytt hopp kräver ett nytt knapptryck.
         jumpConsumed = false;
 
+        // Always flip sprite based on movement input
+        if (moveInput != 0)
+            transform.localScale = new Vector3(moveInput < 0 ? -1f : 1f, 1f, 1f);
+
         if (!groundCheck || holdJump)
         {
             animator.SetBool("isJumping", true);
             animator.SetBool("isRunning", false);
             animator.SetBool("isIdle", false);
         }
-        else if (jumpTime < jumpTime - 0.02f)
-        {
-            animator.SetBool("isJumping", false);
-            animator.SetBool("isRunning", false);
-            animator.SetBool("isIdle", true);
-        }
         else
         {
-            if (moveInput != 0)
-            spriteRenderer.flipX = moveInput < 0;
-            
             animator.SetBool("isJumping", false);
             animator.SetBool("isRunning", moveInput != 0);
             animator.SetBool("isIdle", moveInput == 0);
@@ -144,5 +143,11 @@ public class PlayerMovement2 : MonoBehaviour
     {
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, stompForce);
         rb.AddForce(Vector2.up * 8, ForceMode2D.Impulse);
+    }
+
+    void PlayJumpSound()
+    {
+        if (audioSource != null && jumpSound != null)
+            audioSource.PlayOneShot(jumpSound);
     }
 }

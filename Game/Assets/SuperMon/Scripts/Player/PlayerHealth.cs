@@ -9,6 +9,7 @@ public class PlayerHealth : MonoBehaviour
     public float knockbackForceX = 6f;
     public float knockbackForceY = 5f;
     public float knockbackControlLockDuration = 0.2f;
+    [SerializeField] private AudioClip hurtSound;
 
     public int currentLives;
     private bool isInvincible;
@@ -16,7 +17,9 @@ public class PlayerHealth : MonoBehaviour
     private float knockbackControlLockTimer;
     private SpriteRenderer spriteRenderer;
     private Rigidbody2D rb;
+    private Animator animator;
     private Vector3 spawnPosition;
+    private AudioSource audioSource;
 
     public bool IsKnockbackActive => knockbackControlLockTimer > 0f;
 
@@ -36,10 +39,16 @@ public class PlayerHealth : MonoBehaviour
 
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
         spawnPosition = transform.position;  // Store the starting position
 
+        // Set animator to alive state
+        if (animator != null)
+            animator.SetBool("isAlive", true);
+
         // Update UI on level load
-        HealthManager healthManager = FindObjectOfType<HealthManager>();
+        HealthManager healthManager = FindFirstObjectByType<HealthManager>();
         if (healthManager != null)
             healthManager.UpdateHealth(currentLives);
     }
@@ -69,6 +78,12 @@ public class PlayerHealth : MonoBehaviour
 
     public void Die()
     {
+        animator.SetTrigger("death");
+
+        // Reset score on game over
+        if (ScoreSystem.instance != null)
+            ScoreSystem.instance.ResetScore();
+
         SceneManager.LoadScene("GameOver");
     }
 
@@ -80,7 +95,7 @@ public class PlayerHealth : MonoBehaviour
         PlayerPrefs.SetInt("PlayerHealth", currentLives);
 
         // Update the health UI
-        HealthManager healthManager = FindObjectOfType<HealthManager>();
+        HealthManager healthManager = FindFirstObjectByType<HealthManager>();
         if (healthManager != null)
             healthManager.UpdateHealth(currentLives);
 
@@ -88,6 +103,11 @@ public class PlayerHealth : MonoBehaviour
         {
             // no lives left, go to GameOver scene
             PlayerPrefs.DeleteKey("PlayerHealth");  // Reset health on game over
+
+            // Reset score on game over
+            if (ScoreSystem.instance != null)
+                ScoreSystem.instance.ResetScore();
+
             SceneManager.LoadScene("GameOver");
         }
         else
@@ -107,6 +127,21 @@ public class PlayerHealth : MonoBehaviour
     // called by the enemy when it hits the player
     public void TakeDamage(float enemyX)
     {
+        TakeDamage(enemyX, "normal");
+    }
+
+    void PlayHurtSound()
+    {
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
+
+        if (audioSource != null && hurtSound != null)
+            audioSource.PlayOneShot(hurtSound);
+    }
+
+    // overload to specify damage type
+    public void TakeDamage(float enemyX, string damageType)
+    {
         // Allow final killing blow even if invincible, otherwise block damage during invincibility
         if (isInvincible && currentLives > 1)
             return;
@@ -118,13 +153,31 @@ public class PlayerHealth : MonoBehaviour
         PlayerPrefs.Save();
         Debug.Log("Damage taken! Health saved: " + currentLives);
 
+        // Trigger appropriate damage animation
+        if (animator != null)
+        {
+            if (damageType == "thunder")
+                animator.SetTrigger("takingThunderDamage");
+            else
+                animator.SetTrigger("takingNormalDamage");
+        }
+
         // Update the health UI
-        HealthManager healthManager = FindObjectOfType<HealthManager>();
+        HealthManager healthManager = FindFirstObjectByType<HealthManager>();
         if (healthManager != null)
             healthManager.UpdateHealth(currentLives);
 
         if (currentLives <= 0)
         {
+            PlayHurtSound();
+
+            // Tell animator player is dead (so damage animations won't transition to idle)
+            if (animator != null)
+            {
+                animator.SetBool("isAlive", false);
+                animator.SetTrigger("isDying");
+            }
+
             // no lives left, wait before going to GameOver scene
             PlayerPrefs.DeleteKey("PlayerHealth");
             Debug.Log("Game Over! Health reset.");
@@ -142,6 +195,7 @@ public class PlayerHealth : MonoBehaviour
 
             isInvincible = true;
             invincibilityTimer = invincibilityDuration;
+            PlayHurtSound();
         }
     }
 
@@ -162,6 +216,19 @@ public class PlayerHealth : MonoBehaviour
 
         rb.linearVelocity = new Vector2(pushDir * horizontalForce, rb.linearVelocity.y);
         knockbackControlLockTimer = knockbackControlLockDuration;
+        PlayHurtSound();
+    }
+
+    // Play damage animation without dealing damage (used by non-damaging projectiles like WaterPush)
+    public void PlayDamageAnimation(string damageType)
+    {
+        if (animator != null)
+        {
+            if (damageType == "thunder")
+                animator.SetTrigger("takingThunderDamage");
+            else
+                animator.SetTrigger("takingNormalDamage");
+        }
     }
 }
 

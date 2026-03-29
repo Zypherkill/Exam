@@ -57,8 +57,8 @@ public class ThrowPokeBall : MonoBehaviour
             return;
         }
 
-        // Bestäm riktning baserat på SpriteRenderer.flipX
-        float direction = spriteRenderer.flipX ? -1f : 1f;
+        // Bestäm riktning baserat på transform scale
+        float direction = transform.localScale.x < 0 ? -1f : 1f;
 
         GameObject proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
         PokeBallProjectile projectile = proj.GetComponent<PokeBallProjectile>();
