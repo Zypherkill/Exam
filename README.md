@@ -43,6 +43,12 @@ På banorna hittar du olika typer av lådor:
 
 ---
 
+## 🚧 Byggt med
+
+* C#
+* Unity
+---
+
 ## 🧪 Testare
 
 Spelet är officiellt testat av våra legendariska QA-experter:
@@ -52,12 +58,6 @@ Spelet är officiellt testat av våra legendariska QA-experter:
 
 *(De har förhoppningsvis inte hittat alla bugs…)* 🐛😅
 
----
-
-## 🚧 Byggt med
-
-* C#
-* Unity
 ---
 
 Lycka till och ha kul med **Super Jespermon**! 🎉
