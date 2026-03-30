@@ -1,10 +1,65 @@
-# Super Jespermon
+# 🎮 Super Jespermon
 
-## Hur man testar spelet:
-Gå in på denna [länk](https://www.youtube.com/) för att få upp spelet direkt i webbläsaren. Kontroller för spelet är A och D för att röra sig vänster och höger, space för att hoppa (håll in space för att hoppa högre) och shift för sprint.
-På banorna så finns det lådor för att samla mynt som ger poäng och även lådor för att få pokebollar, du kan fånga pokemons genom att kasta bollen med F knappen och sen plocka upp den genom att gå på den.
+Välkommen till **Super Jespermon** – ett fartfyllt, plattformsbaserat äventyr där reflexer, timing och lite monsterfångande avgör hur långt du kommer! 🏃‍♂️✨
 
-## Mål
-Ta dig igenom alla tre nivåerna och samla så många poäng som möjligt!
+---
 
+## 🕹️ Hur man testar spelet
 
+Redo att spela direkt i webbläsaren?
+Klicka här 👉 https://www.youtube.com/
+
+*(Ja, länken är suspicious… men trust the process 😄)*
+
+---
+
+## 🎯 Mål
+
+Ta dig igenom alla **tre nivåer** och samla så mycket poäng som möjligt!
+Ju fler mynt du hittar och Pokémon du fångar – desto bättre score. Kan du slå high score?
+
+---
+
+## 🎮 Kontroller
+
+Lär dig dessa för att bli en riktig Jespermon-mästare:
+
+* **A / D** → Rör dig vänster / höger
+* **Space** → Hoppa *(håll inne för högre hopp!)*
+* **Shift** → Sprinta (speed is key 🚀)
+* **F** → Kasta pokéboll
+
+---
+
+## 📦 Gameplay
+
+På banorna hittar du olika typer av lådor:
+
+* 💰 **Myntlådor** → Ger poäng
+* 🔴 **Pokébollslådor** → Ger dig möjlighet att fånga Pokémon
+
+### 🧠 Så fångar du Pokémon:
+
+1. Kasta en pokéboll med **F**
+2. Gå fram till bollen för att plocka upp din fångst
+
+---
+
+## 🧪 Testare
+
+Spelet är officiellt testat av våra legendariska QA-experter:
+
+* Nikki
+* Klara
+
+*(De har förhoppningsvis inte hittat alla bugs…)* 🐛😅
+
+---
+
+## 🚧 Byggt med
+
+* C#
+* Unity
+---
+
+Lycka till och ha kul med **Super Jespermon**! 🎉
