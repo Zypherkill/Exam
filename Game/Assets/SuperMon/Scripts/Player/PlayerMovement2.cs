@@ -100,7 +100,10 @@ public class PlayerMovement2 : MonoBehaviour
     //Funktion för att läsa in rörelse
     public void OnMoveInput(InputAction.CallbackContext context)
     {
-        moveInput = context.ReadValue<float>();
+        if (playerHealth.maxLives > 0)
+        {
+            moveInput = context.ReadValue<float>();
+        }
     }
 
     public float GetMoveInput() => moveInput;
