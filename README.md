@@ -5,8 +5,7 @@ Välkommen till **Super Jespermon** – platformbaserat aventyr inspirerat av Ma
 ## 🕹️ Hur man testar spelet
 
 Redo att spelas direkt i webbläsaren!
-Klicka [här](https://www.youtube.com/)
-
+Klicka [här](https://zypherkill.github.io/supermon/)
 ## 🎯 Mål
 
 Utforska och ta dig igenom alla **tre nivåer** och samla så mycket poäng som möjligt!
