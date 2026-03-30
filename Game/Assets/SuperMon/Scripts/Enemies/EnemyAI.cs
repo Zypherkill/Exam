@@ -29,8 +29,6 @@ public class EnemyAI : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (isDead)
-            return;
 
 
         CheckForPlayer();
@@ -98,15 +96,23 @@ public class EnemyAI : MonoBehaviour
         PlayerMovement2 movement = player.GetComponentInParent<PlayerMovement2>();
         movement.StompBounce();
 
-        // Play attack animation if stomped on, its similar to a death animation.
-        PikachuLogic pikachu = GetComponent<PikachuLogic>();
-        if (pikachu != null)
+        // Play death animation if stomped on
+        SquirtleLogic squirtle = GetComponent<SquirtleLogic>();
+        if (squirtle != null)
         {
-            pikachu.TakeDamage();
+            squirtle.TakeDamage();
         }
         else
         {
-            Destroy(gameObject, 0.3f);
+            PikachuLogic pikachu = GetComponent<PikachuLogic>();
+            if (pikachu != null)
+            {
+                pikachu.TakeDamage();
+            }
+            else
+            {
+                Destroy(gameObject, 0.3f);
+            }
         }
     }
 

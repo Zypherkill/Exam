@@ -145,4 +145,39 @@ public class SquirtleLogic : MonoBehaviour
 		if (animator != null)
 			animator.SetBool("isAttacking", false);
 	}
+
+	public void TakeDamage()
+	{
+		if (isDead)
+			return;
+
+		isDead = true;
+		StopAllCoroutines();
+
+		if (animator != null)
+		{
+			animator.SetBool("isDead", true);
+			StartCoroutine(DestroyAfterAnimation());
+		}
+		else
+		{
+			Destroy(gameObject);
+		}
+	}
+
+	IEnumerator DestroyAfterAnimation()
+	{
+		// Wait for the frame to pass
+		yield return new WaitForEndOfFrame();
+
+		// Get animation clip length
+		AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+		float animationLength = stateInfo.length / stateInfo.speed;
+
+		// Wait for animation to complete
+		yield return new WaitForSeconds(animationLength);
+
+		// Destroy the enemy
+		Destroy(gameObject);
+	}
 }

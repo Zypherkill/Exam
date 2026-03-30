@@ -15,7 +15,13 @@ public class PokeBallPickup : MonoBehaviour
 
     public void SetCaughtPokemon(PokemonData pokemon)
     {
-        caughtPokemon = pokemon;
+        if (pokemon != null)
+        {
+            // Skapa en kopia av pokemon-datan så den inte försvinner när fienden förstörs
+            PokemonData copy = gameObject.AddComponent<PokemonData>();
+            copy.CopyFrom(pokemon);
+            caughtPokemon = copy;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

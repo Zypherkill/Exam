@@ -68,10 +68,12 @@ public class Inventory : MonoBehaviour
     {
         if (pokemonData != null)
         {
+
             CaughtPokemonData caught = new CaughtPokemonData(pokemonData);
             caughtPokemon.Add(caught);
             Debug.Log("✓ Fångade: " + caught.GetPokemonName() + " | Total fångade: " + caughtPokemon.Count);
             OnCaughtPokemonChanged?.Invoke(caughtPokemon);
+
         }
     }
 
