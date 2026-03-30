@@ -1,6 +1,6 @@
 # 🎮 Super Jespermon
 
-Välkommen till **Super Jespermon** – ett fartfyllt, plattformsbaserat äventyr där reflexer, timing och lite monsterfångande avgör hur långt du kommer! 🏃‍♂️✨
+Välkommen till **Super Jespermon** – platformbaserat aventyr inspirerat av Mario och Pokemon 🏃‍♂️✨
 
 ---
 
