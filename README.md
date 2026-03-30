@@ -34,7 +34,7 @@ Lär dig dessa för att bli en riktig Jespermon-mästare:
 På banorna hittar du olika typer av lådor:
 
 * 💰 **Myntlådor** → Ger poäng
-* 🔴 **Pokébollslådor** → Ger dig möjlighet att fånga Pokémon
+* 🔴 **Javascript Lådor** → Ger dig möjlighet att fånga Pokémon
 
 ### 🧠 Så fångar du Pokémon:
 
