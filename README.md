@@ -6,7 +6,7 @@ Välkommen till **Super Jespermon** – ett fartfyllt, plattformsbaserat äventy
 
 ## 🕹️ Hur man testar spelet
 
-Redo att spela direkt i webbläsaren?
+Redo att spelas direkt i webbläsaren!
 Klicka [här](https://www.youtube.com/)
 
 ---
