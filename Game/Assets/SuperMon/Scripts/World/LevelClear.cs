@@ -22,7 +22,20 @@ public class LevelClear : MonoBehaviour
     [Tooltip("Delay in seconds before loading the target scene")]
     public float delay = 0f;
 
+    [Tooltip("Victory sound to play when level is cleared")]
+    public AudioClip victorySFX;
+
     bool triggered = false;
+    private AudioSource audioSource;
+
+    void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+            Debug.LogWarning("LevelClear: No AudioSource found!");
+        if (victorySFX == null)
+            Debug.LogWarning("LevelClear: No victorySFX assigned!");
+    }
 
     void OnTriggerEnter(Collider other)
     {
@@ -30,7 +43,17 @@ public class LevelClear : MonoBehaviour
         if (other.CompareTag(triggerTag))
         {
             triggered = true;
-            if (delay <= 0f) LoadTarget(); else Invoke(nameof(LoadTarget), delay);
+
+            // Play victory sound
+            if (audioSource != null && victorySFX != null)
+                audioSource.PlayOneShot(victorySFX);
+
+            // Calculate delay including sound length if using PlayOneShot
+            float totalDelay = delay;
+            if (audioSource != null && victorySFX != null && delay <= 0f)
+                totalDelay = victorySFX.length; // Wait for sound to finish
+
+            if (totalDelay <= 0f) LoadTarget(); else Invoke(nameof(LoadTarget), totalDelay);
         }
     }
 
@@ -40,7 +63,17 @@ public class LevelClear : MonoBehaviour
         if (other.CompareTag(triggerTag))
         {
             triggered = true;
-            if (delay <= 0f) LoadTarget(); else Invoke(nameof(LoadTarget), delay);
+
+            // Play victory sound
+            if (audioSource != null && victorySFX != null)
+                audioSource.PlayOneShot(victorySFX);
+
+            // Calculate delay including sound length if using PlayOneShot
+            float totalDelay = delay;
+            if (audioSource != null && victorySFX != null && delay <= 0f)
+                totalDelay = victorySFX.length; // Wait for sound to finish
+
+            if (totalDelay <= 0f) LoadTarget(); else Invoke(nameof(LoadTarget), totalDelay);
         }
     }
 
