@@ -45,6 +45,8 @@ Spelet är officiellt testat av våra legendariska QA-experter:
 * Nikki
 * Klara
 
-*(De har förhoppningsvis inte hittat alla bugs…)* 🐛😅
+*(De har förhoppningsvis inte hittat alla bugs…eller hidden easter eggs)* 🐛😅
+
+Länk till repo för [Webprojekt](https://github.com/Zypherkill/supermon)
 
 Lycka till och ha kul med **Super Jespermon**! 🎉
