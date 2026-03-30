@@ -14,8 +14,8 @@ public class Nikki : MonoBehaviour
                 MusicManager.instance.PlayMusic(musicToPlay);
             }
 
-            // Do other pickup logic here if needed
-            Destroy(gameObject);
+            // Destroy efter en kort delay för att undvika lag
+            Destroy(gameObject, 0.1f);
         }
     }
 }
