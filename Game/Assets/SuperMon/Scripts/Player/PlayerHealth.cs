@@ -22,6 +22,7 @@ public class PlayerHealth : MonoBehaviour
     private AudioSource audioSource;
 
     public bool IsKnockbackActive => knockbackControlLockTimer > 0f;
+    public bool IsDead => currentLives <= 0;
 
     void Start()
     {
@@ -171,9 +172,13 @@ public class PlayerHealth : MonoBehaviour
         {
             PlayHurtSound();
 
-            // Tell animator player is dead (so damage animations won't transition to idle)
+            // Tell animator player is dead (so damage animations won't transition out of death animation)
             if (animator != null)
             {
+                // Clear all movement animation states so death animation plays cleanly
+                animator.SetBool("isRunning", false);
+                animator.SetBool("isJumping", false);
+                animator.SetBool("isIdle", false);
                 animator.SetBool("isAlive", false);
                 animator.SetTrigger("isDying");
             }

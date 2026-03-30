@@ -40,9 +40,10 @@ public class PlayerMovement2 : MonoBehaviour
     {
         GroundCheck();
         bool isKnockbackActive = playerHealth != null && playerHealth.IsKnockbackActive;
+        bool isDead = playerHealth != null && playerHealth.IsDead;
 
         // Sätt rörelse till 0 om spelaren är på vägg, annars applicera normal rörelse
-        if (!isKnockbackActive)
+        if (!isKnockbackActive && !isDead)
             rb.linearVelocityX = moveInput * moveSpeed;
 
         // Resettar hopptillstand nar man landar
@@ -54,7 +55,7 @@ public class PlayerMovement2 : MonoBehaviour
         }
 
         // Hoppa endast om man ar pa marken
-        if (jumpConsumed && groundCheck)
+        if (jumpConsumed && groundCheck && !isDead)
         {
             rb.linearVelocityY = jumpForce;
             holdJump = true;
@@ -77,20 +78,24 @@ public class PlayerMovement2 : MonoBehaviour
         if (moveInput != 0)
             transform.localScale = new Vector3(moveInput < 0 ? -1f : 1f, 1f, 1f);
 
-        if (!groundCheck || holdJump)
+        // Only update animation states if not dead, so death animation can play
+        if (!isDead)
         {
-            animator.SetBool("isJumping", true);
-            animator.SetBool("isRunning", false);
-            animator.SetBool("isIdle", false);
-        }
-        else
-        {
-            animator.SetBool("isJumping", false);
-            animator.SetBool("isRunning", moveInput != 0);
-            animator.SetBool("isIdle", moveInput == 0);
+            if (!groundCheck || holdJump)
+            {
+                animator.SetBool("isJumping", true);
+                animator.SetBool("isRunning", false);
+                animator.SetBool("isIdle", false);
+            }
+            else
+            {
+                animator.SetBool("isJumping", false);
+                animator.SetBool("isRunning", moveInput != 0);
+                animator.SetBool("isIdle", moveInput == 0);
+            }
         }
 
-        if (runInput && !isKnockbackActive)
+        if (runInput && !isKnockbackActive && !isDead)
         {
             rb.linearVelocityX = moveInput * moveSpeed * runSpeedMultiplier;
         }
