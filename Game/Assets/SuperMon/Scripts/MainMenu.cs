@@ -28,7 +28,7 @@ public class MainMenu : MonoBehaviour
         PlayerPrefs.Save();
 
         // Clear any DontDestroyOnLoad Inventory from previous runs
-        Inventory inv = FindObjectOfType<Inventory>();
+        Inventory inv = FindFirstObjectByType<Inventory>();
         if (inv != null)
         {
             Debug.Log("Destroying old Inventory instance");
@@ -36,7 +36,7 @@ public class MainMenu : MonoBehaviour
         }
 
         // Reset score in ScoreSystem if it exists
-        ScoreSystem scoreSystem = FindObjectOfType<ScoreSystem>();
+        ScoreSystem scoreSystem = FindFirstObjectByType<ScoreSystem>();
         if (scoreSystem != null)
         {
             scoreSystem.ResetScore();
