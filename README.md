@@ -13,7 +13,7 @@ Klicka [här](https://www.youtube.com/)
 
 ## 🎯 Mål
 
-Utforska och ta dig igenom alla **tre nivåer** och samla så mycket poäng som möjligt för att missa!
+Utforska och ta dig igenom alla **tre nivåer** och samla så mycket poäng som möjligt!
 Ju fler mynt du hittar och Pokémon du fångar – desto bättre score. Kan du slå high score?
 
 ---
