@@ -50,3 +50,6 @@ Spelet är officiellt testat av våra legendariska QA-experter:
 Länk till repo för [Webprojekt](https://github.com/Zypherkill/supermon)
 
 Lycka till och ha kul med **Super Jespermon**! 🎉
+
+Note till Jesper! 
+Spelets scripts ligger i path - Game/Assets/SuperMon/Scripts 
