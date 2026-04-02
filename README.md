@@ -7,7 +7,7 @@ Välkommen till **Super Jespermon** – platformbaserat aventyr inspirerat av Ma
 
 [Projects](https://github.com/users/Zypherkill/projects/7)
 
-[Scripts](https://github.com/Zypherkill/Exam/tree/main/Game/Assets/SuperMon/Scripts)
+Note till Jesper alla våra -> [Scripts](https://github.com/Zypherkill/Exam/tree/main/Game/Assets/SuperMon/Scripts)
 
 [Webprojekt](https://github.com/Zypherkill/supermon)
 
